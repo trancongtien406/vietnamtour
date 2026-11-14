@@ -32,7 +32,7 @@ export default function Home() {
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/35 to-ink/75" />
         <div className="container-x flex min-h-[560px] flex-col justify-center py-20 text-white md:min-h-[620px]">
           <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm backdrop-blur">
-            <StarIcon className="h-4 w-4 text-amber-300" /> Rated 4.8/5 by travellers from 60+ countries
+            <StarIcon className="h-4 w-4 text-amber-300" /> Portfolio demo · 14 hand-picked experiences across Vietnam
           </p>
           <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.1] md:text-6xl">
             Discover Vietnam with people who call it home
@@ -177,11 +177,12 @@ async function Destinations() {
 async function Stats() {
   const s = await api.stats();
   return (
+    <div>
     <dl className="grid grid-cols-2 gap-4">
       {[
         [s.tours, "Bookable experiences"],
         [s.destinations, "Destinations"],
-        [s.reviews.toLocaleString("en-US"), "Verified reviews"],
+        [s.reviews.toLocaleString("en-US"), "Sample reviews"],
         [`${s.averageRating}/5`, "Average rating"],
       ].map(([v, l]) => (
         <div key={String(l)} className="rounded-2xl bg-white/10 p-5">
@@ -190,5 +191,7 @@ async function Stats() {
         </div>
       ))}
     </dl>
+    <p className="mt-3 text-right text-xs text-white/60">Demo catalog figures from sample data</p>
+    </div>
   );
 }

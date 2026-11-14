@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { Suspense } from "react";
 import { CheckIcon, ClockIcon, PinIcon, UsersIcon } from "@/components/icons";
+import { BookingTimeline } from "@/components/booking-timeline";
 import { RememberEmail } from "@/components/remember-email";
 import { Steps } from "@/components/steps";
 import { api } from "@/lib/api";
@@ -89,11 +90,7 @@ async function Voucher({ params }: { params: Promise<{ code: string }> }) {
         </div>
         <div className="border-t border-mist px-6 py-4">
           <h2 className="text-sm font-semibold">Booking timeline</h2>
-          <ol className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-ink/60">
-            {b.history.map((h) => (
-              <li key={h.at + h.status}>{STATUS_LABEL[h.status]} · {new Date(h.at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Ho_Chi_Minh" })}{h.note ? ` · ${h.note}` : ""}</li>
-            ))}
-          </ol>
+          <BookingTimeline booking={b} />
         </div>
       </div>
 

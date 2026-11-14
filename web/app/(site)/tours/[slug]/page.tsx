@@ -9,7 +9,7 @@ import { Rating } from "@/components/rating";
 import { SaveButton } from "@/components/save-button";
 import { TourCard } from "@/components/tour-card";
 import { ApiError, api } from "@/lib/api";
-import { CATEGORY_LABEL, duration } from "@/lib/format";
+import { CATEGORY_LABEL, duration, usd } from "@/lib/format";
 
 export async function generateMetadata({ params }: PageProps<"/tours/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -37,7 +37,7 @@ async function TourDetail({ params }: { params: Promise<{ slug: string }> }) {
   });
 
   return (
-    <article className="container-x py-8">
+    <article className="container-x pb-24 pt-8 lg:pb-8">
       <nav className="mb-4 text-sm text-ink/55" aria-label="Breadcrumb">
         <Link href="/tours" className="hover:text-jade">Experiences</Link> /{" "}
         <Link href={`/destinations/${tour.destinationSlug}`} className="hover:text-jade">{tour.destinationName}</Link>
@@ -127,8 +127,8 @@ async function TourDetail({ params }: { params: Promise<{ slug: string }> }) {
           <section>
             <h2 className="font-display text-2xl font-bold">Reviews</h2>
             <div className="mt-2"><Rating value={tour.rating} count={tour.reviewCount} className="text-base" /></div>
-            <div className="mt-5 grid gap-4">
-              {tour.reviews.map((r) => (
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {tour.reviews.slice(0, 4).map((r) => (
                 <figure key={r.author + r.date} className="rounded-2xl bg-sand p-5">
                   <div className="flex items-center justify-between">
                     <figcaption className="font-semibold">{r.author} <span className="font-normal text-ink/55">· {r.country}</span></figcaption>
@@ -152,6 +152,14 @@ async function TourDetail({ params }: { params: Promise<{ slug: string }> }) {
             instantConfirmation={tour.instantConfirmation}
           />
         </aside>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-4 border-t border-mist bg-white/95 px-5 py-3 backdrop-blur lg:hidden">
+        <div>
+          <p className="text-xs text-ink/55">From</p>
+          <p className="text-lg font-bold">{usd(tour.priceUsd)} <span className="text-sm font-normal text-ink/55">/ adult</span></p>
+        </div>
+        <a href="#book" className="btn-primary !px-5 !py-2.5">Check availability</a>
       </div>
 
       {tour.related.length > 0 && (

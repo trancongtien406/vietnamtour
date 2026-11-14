@@ -30,9 +30,10 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="container-x py-5 text-xs text-white/50">
-          © 2026 Vietnamtour · Portfolio demo. Payments run in sandbox mode, no real charges.
-        </p>
+        <div className="container-x flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-white/50">
+          <p>© 2026 Vietnamtour</p>
+          <p className="rounded-full border border-white/15 px-3 py-1 tracking-wide text-white/60">Portfolio demo · Sample data · Sandbox payments</p>
+        </div>
       </div>
     </footer>
   );
