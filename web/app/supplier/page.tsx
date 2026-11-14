@@ -28,7 +28,7 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-6">
       <div className="h-16 w-96 animate-pulse rounded-xl bg-sp-muted" />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-[124px] animate-pulse rounded-2xl bg-sp-muted" />)}</div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-[104px] sm:h-[124px] animate-pulse rounded-2xl bg-sp-muted" />)}</div>
       <div className="h-80 animate-pulse rounded-2xl bg-sp-muted" />
     </div>
   );
@@ -41,24 +41,24 @@ async function Dashboard({ searchParams }: { searchParams: Promise<Record<string
   const t = o.totals;
   const attention = t.awaitingConfirmation + t.pendingPayment;
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader title={<>{greeting()}, Lotus Trails <span aria-hidden>👋</span></>} subtitle="Here’s how your experiences are performing." />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <KpiCard icon={Coins} label="Gross revenue" value={usd(t.grossUsd)} sub={`${t.bookings} bookings · ${t.guests} guests`} />
-        <KpiCard icon={Wallet} label="Your payout (80%)" value={usd(t.payoutUsd)} sub={`Commission ${usd(t.commissionUsd)} · refunds ${usd(t.refundsUsd)}`} />
+        <KpiCard icon={Wallet} label="Net earnings" value={usd(t.payoutUsd)} sub={`After 20% commission ${usd(t.commissionUsd)} · refunds ${usd(t.refundsUsd)}`} />
         <KpiCard icon={CalendarDays} label="Upcoming departures" value={t.upcoming} sub={`${t.upcomingGuests} guests booked`} />
         <KpiCard
           icon={AlertCircle}
           label="Needs your action"
           value={attention}
-          sub={`${t.awaitingConfirmation} to confirm · ${t.pendingPayment} unpaid · ${t.cancelled} cancelled`}
+          sub={`${t.awaitingConfirmation} to confirm · ${t.pendingPayment} awaiting payment`}
           attention={attention > 0}
           href="/supplier/bookings?status=attention"
         />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_1fr]">
         <section className="sp-card p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -93,7 +93,7 @@ async function Dashboard({ searchParams }: { searchParams: Promise<Record<string
         </section>
       </div>
 
-      <div className="grid gap-6 2xl:grid-cols-[1.6fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 2xl:grid-cols-[1.6fr_1fr]">
         <section className="sp-card overflow-hidden">
           <div className="flex items-center justify-between px-5 pt-5 pb-4 sm:px-6">
             <h2 className="sp-h2">Upcoming departures</h2>

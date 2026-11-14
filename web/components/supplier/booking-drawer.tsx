@@ -21,8 +21,8 @@ const usd = (v: number) => `$${v.toLocaleString("en-US", { minimumFractionDigits
 
 function Section({ icon: Icon, title, children }: { icon: typeof CalendarDays; title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-sp-border bg-white p-4">
-      <h3 className="mb-2 flex items-center gap-2 text-[15px] font-semibold"><Icon className="h-4 w-4 text-sp-text2" strokeWidth={1.8} />{title}</h3>
+    <section className="rounded-2xl border border-sp-border bg-white px-4 py-3">
+      <h3 className="mb-1.5 flex items-center gap-2 text-[14px] font-semibold"><Icon className="h-4 w-4 text-sp-text2" strokeWidth={1.8} />{title}</h3>
       {children}
     </section>
   );
@@ -30,7 +30,7 @@ function Section({ icon: Icon, title, children }: { icon: typeof CalendarDays; t
 
 function Rows({ rows }: { rows: [string, React.ReactNode][] }) {
   return (
-    <dl className="grid grid-cols-[120px_1fr] gap-x-3 gap-y-1.5 text-[13px]">
+    <dl className="grid grid-cols-[112px_1fr] gap-x-3 gap-y-1 text-[13px] leading-5">
       {rows.map(([k, v]) => (
         <div key={k} className="contents">
           <dt className="text-sp-text2">{k}</dt>
@@ -54,7 +54,7 @@ export function BookingDrawer({ booking: b, tour, onClose }: { booking: Booking;
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
       <button type="button" aria-label="Close booking details" onClick={onClose} className="absolute inset-0 cursor-default bg-[rgba(20,40,32,.22)]" />
       <aside className="absolute inset-y-0 right-0 flex w-full flex-col bg-sp-warm shadow-[-12px_0_40px_rgba(23,37,31,.10)] sm:w-[480px] sm:rounded-l-[20px]">
-        <header className="flex items-start justify-between gap-3 border-b border-sp-border px-6 pt-5 pb-4">
+        <header className="flex items-start justify-between gap-3 border-b border-sp-border px-5 pt-4 pb-3">
           <div>
             <h2 id="drawer-title" className="sp-h2">Booking details</h2>
             <div className="mt-1 flex items-center gap-2">
@@ -64,13 +64,13 @@ export function BookingDrawer({ booking: b, tour, onClose }: { booking: Booking;
           </div>
           <button ref={closeRef} type="button" onClick={onClose} aria-label="Close" className="sp-focus grid h-9 w-9 place-items-center rounded-lg hover:bg-sp-muted"><X className="h-5 w-5" /></button>
         </header>
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-6 py-4">
-          <div className="flex items-center gap-4">
-            {tour?.images[0] && <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl"><Image src={tour.images[0]} alt="" fill sizes="96px" className="object-cover" /></div>}
-            <p className="font-[family-name:var(--font-sp-serif)] text-[19px] leading-snug">{b.tourTitle}</p>
+        <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-5 py-3">
+          <div className="flex items-center gap-3">
+            {tour?.images[0] && <div className="relative h-12 w-[72px] shrink-0 overflow-hidden rounded-lg"><Image src={tour.images[0]} alt="" fill sizes="72px" className="object-cover" /></div>}
+            <p className="font-[family-name:var(--font-sp-serif)] text-[17px] leading-snug">{b.tourTitle}</p>
           </div>
           <Section icon={CalendarDays} title="Departure">
-            <Rows rows={[["Date", longDay(b.date)], ["Starts at", b.time], ["Duration", tour ? `${tour.durationDays} day${tour.durationDays > 1 ? "s" : ""}` : "–"], ["Meeting point", tour?.meetingPoint ?? "–"]]} />
+            <Rows rows={[["Date & time", `${longDay(b.date)} · ${b.time}`], ["Duration", tour ? `${tour.durationDays} day${tour.durationDays > 1 ? "s" : ""}` : "–"], ["Meeting point", tour?.meetingPoint ?? "–"]]} />
           </Section>
           <Section icon={UserRound} title="Guest information">
             <Rows rows={[["Lead traveller", b.fullName], ["Email", <a key="e" href={`mailto:${b.email}`} className="text-forest hover:underline">{b.email}</a>], ["Phone", b.phone], ["Party", party]]} />
@@ -80,14 +80,14 @@ export function BookingDrawer({ booking: b, tour, onClose }: { booking: Booking;
               rows={[
                 ["Total", <span key="t" className="sp-num font-semibold">{usd(b.totalUsd)}</span>],
                 ["Payment method", b.payment ? `${b.payment.brand} •••• ${b.payment.last4}` : "Not paid yet"],
-                ["Your payout", <span key="p" className="sp-num">{usd(Math.round((b.totalUsd - b.refundUsd) * 80) / 100)} (after 20% commission)</span>],
+                ["Net earnings", <span key="p" className="sp-num">{usd(Math.round((b.totalUsd - b.refundUsd) * 80) / 100)} (after 20% commission)</span>],
                 ...(b.refundUsd > 0 ? [["Refunded", <span key="r" className="sp-num text-[#7852A5]">{usd(b.refundUsd)}</span>] as [string, React.ReactNode]] : []),
                 ["Cancellation", b.freeCancellation ? "Free until 24h before" : "Non-refundable"],
               ]}
             />
           </Section>
           <Section icon={CheckCircle2} title="Booking timeline">
-            <ol className="space-y-1.5 text-[13px]">
+            <ol className="space-y-1 text-[13px] leading-5">
               {bookingSteps(b).map((s) => (
                 <li key={s.label} className="flex items-center gap-2">
                   {s.done ? <CheckCircle2 className={`h-4 w-4 ${s.tone === "danger" ? "text-[#BE3C36]" : "text-[#08734D]"}`} /> : <Circle className="h-4 w-4 text-sp-strong" />}
@@ -101,7 +101,7 @@ export function BookingDrawer({ booking: b, tour, onClose }: { booking: Booking;
             <p className="text-[13px] text-sp-text2">{b.note || "No special requests."}</p>
           </Section>
         </div>
-        <footer className="flex flex-wrap items-center gap-2 border-t border-sp-border px-6 py-4">
+        <footer className="sticky bottom-0 flex flex-wrap items-center gap-2 border-t border-sp-border bg-sp-warm px-5 py-3">
           {b.status === "confirmed" && <SupplierBookingButton code={b.code} action="check-in" label="Check in" />}
           {b.status === "awaiting_supplier" && (
             <>
@@ -123,7 +123,7 @@ export function BookingDrawer({ booking: b, tour, onClose }: { booking: Booking;
             >
               <input type="hidden" name="code" value={b.code} />
               <input type="hidden" name="action" value="cancel" />
-              <button className="sp-btn h-9 px-2 text-[#BE3C36] hover:bg-[#FDE8E7]">Cancel booking</button>
+              <button className="sp-btn h-9 px-2 text-[#BE3C36] hover:bg-[#FDE8E7]">Cancel</button>
             </form>
           )}
         </footer>

@@ -51,7 +51,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<Record<string,
         </div>
       </AutoSubmitForm>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <KpiCard icon={Gauge} label="Occupancy" value={`${Math.round((sold / Math.max(cap, 1)) * 100)}%`} sub="Next 21 days" />
         <KpiCard icon={Ticket} label="Seats sold" value={sold} sub={`of ${cap} available`} />
         <KpiCard icon={TriangleAlert} label="Sold-out departures" value={full} sub={`${slots.length} departures scheduled`} />

@@ -18,6 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { DemoBadge } from "./demo-badge";
 
 const GROUPS: { label: string; items: { href: string; label: string; icon: LucideIcon }[] }[] = [
   {
@@ -110,7 +111,8 @@ export function SupplierSidebar() {
   return (
     <aside className="sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col border-r border-sp-border bg-sp-warm px-4 pt-6 pb-4 lg:flex">
       <Brand />
-      <div className="mt-8 min-h-0 flex-1 overflow-y-auto pr-1"><Nav /></div>
+      <div className="mt-4"><DemoBadge /></div>
+      <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-1"><Nav /></div>
       <BusinessCard />
     </aside>
   );
@@ -137,6 +139,7 @@ export function MobileTopBar({ attention }: { attention: number }) {
           {attention > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-orange" />}
         </Link>
       </header>
+      <DemoBadge variant="strip" />
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
           <button type="button" aria-label="Close menu" className="absolute inset-0 bg-[rgba(20,40,32,.32)]" onClick={() => setOpen(false)} />

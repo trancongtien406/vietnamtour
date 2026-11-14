@@ -22,7 +22,7 @@ async function Editor({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <div className="space-y-6">
       <Link href="/supplier/products" className="sp-focus inline-flex items-center gap-1.5 rounded text-sm font-medium text-sp-text2 hover:text-forest"><ArrowLeft className="h-4 w-4" /> All products</Link>
-      <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_340px]">
         <div>
           <h1 className="sp-h1">Edit product</h1>
           <p className="mt-1 text-sp-text2">Changes go live on the website and mobile app immediately.</p>

@@ -55,6 +55,13 @@
     letter-spacing: -0.01em;
   }
 
+  @media (max-width: 639px) {
+    .sp-h1 {
+      font-size: 25px;
+      line-height: 32px;
+    }
+  }
+
   .sp-h2 {
     font-family: var(--font-sp-serif);
     font-size: 20px;

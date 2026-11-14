@@ -48,7 +48,7 @@ export function EarningsChart({ data }: { data: { day: string; grossUsd: number;
           <XAxis dataKey="day" tickFormatter={short} tick={AXIS} axisLine={false} tickLine={false} interval={2} minTickGap={8} />
           <YAxis tickFormatter={money} tick={AXIS} axisLine={false} tickLine={false} width={52} domain={[0, "auto"]} allowDataOverflow />
           <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(13,91,76,.06)" }} />
-          <Legend verticalAlign="top" align="right" iconType="circle" iconSize={9} height={30} wrapperStyle={{ fontSize: 13, top: -42 }} formatter={(v) => <span style={{ color: "#4F5D57" }}>{v}</span>} />
+          <Legend verticalAlign="top" align="right" iconType="circle" iconSize={9} height={30} wrapperStyle={{ fontSize: 13, top: 0 }} formatter={(v) => <span style={{ color: "#4F5D57" }}>{v}</span>} />
           <Bar dataKey="netUsd" name="Net earnings" fill="#0D5B4C" radius={[5, 5, 0, 0]} maxBarSize={12} />
           <Bar dataKey="grossUsd" name="Gross revenue" fill="#B9DDD0" radius={[5, 5, 0, 0]} maxBarSize={12} />
         </BarChart>

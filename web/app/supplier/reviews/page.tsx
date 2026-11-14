@@ -34,7 +34,7 @@ async function Reviews({ searchParams }: { searchParams: Promise<Record<string, 
   const { summary, items } = await api.supplier.reviews(rating);
   const max = Math.max(...summary.distribution.map((d) => d.count), 1);
   return (
-    <div className="grid gap-6 xl:grid-cols-[300px_1fr]">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[300px_1fr]">
       <aside className="h-fit space-y-5 sp-card p-5">
         <div>
           <p className="text-[13px] text-sp-text2">Average rating</p>

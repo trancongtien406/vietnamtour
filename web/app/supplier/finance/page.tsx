@@ -36,7 +36,7 @@ async function Finance({ searchParams }: { searchParams: Promise<Record<string, 
         <RangeSelect value={f.periodDays} options={[[7, "Last 7 days"], [30, "Last 30 days"], [90, "Last 90 days"]]} />
       </PageHeader>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <KpiCard icon={BarChart3} label="Gross revenue" value={usd(f.totals.grossUsd)} sub={`Refunds ${usd(f.totals.refundsUsd)}`} delta={f.deltas.grossPct} />
         <KpiCard icon={Layers} label={`Commission (${Math.round(f.commissionRate * 100)}%)`} value={usd(f.totals.commissionUsd)} sub="Charged on revenue after refunds" />
         <KpiCard icon={Wallet} label="Net earnings" value={usd(f.totals.netUsd)} sub="Gross − commission − refunds" delta={f.deltas.netPct} />
@@ -44,11 +44,11 @@ async function Finance({ searchParams }: { searchParams: Promise<Record<string, 
       </div>
       <p className="sr-only">Changes are {label}.</p>
 
-      <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr]">
         <section className="sp-card p-5 sm:p-6">
           <h2 className="sp-h2">Earnings over time</h2>
           <p className="text-xs text-sp-text2">Daily net earnings and gross revenue, last {f.periodDays} days</p>
-          <div className="mt-4"><EarningsChart data={f.series} /></div>
+          <div className="mt-3"><EarningsChart data={f.series} /></div>
         </section>
         <div className="grid gap-6">
           <section className="sp-card flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
@@ -57,7 +57,10 @@ async function Finance({ searchParams }: { searchParams: Promise<Record<string, 
               <div>
                 <h2 className="sp-h2">Available balance</h2>
                 <p className="sp-num text-[30px] font-bold leading-9">{usd(f.balance.availableUsd)}</p>
-                <p className="text-xs text-sp-text2">Net earnings this week, ready to be paid out</p>
+                <p className="text-xs text-sp-text2">
+                  This week’s net earnings, not yet scheduled
+                  {f.balance.pendingUsd > 0 && <> · excludes {usd(f.balance.pendingUsd)} already scheduled or processing</>}
+                </p>
               </div>
             </div>
             <RequestPayout available={f.balance.availableUsd} minimum={f.balance.minimumPayoutUsd} account={`${acct.bankName} •••• ${acct.accountLast4}`} />
@@ -66,9 +69,19 @@ async function Finance({ searchParams }: { searchParams: Promise<Record<string, 
             <div className="flex items-start gap-4">
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-orange-light text-orange"><CalendarClock className="h-5 w-5" strokeWidth={1.8} /></span>
               <div>
-                <h2 className="sp-h2">Upcoming payout</h2>
-                <p className="sp-num text-[30px] font-bold leading-9">{usd(f.nextPayout.amountUsd)}</p>
-                <p className="text-xs text-sp-text2">Scheduled for {d(f.nextPayout.date, true)} · weekly settlement</p>
+                {f.nextPayout.status === "scheduled" ? (
+                  <>
+                    <h2 className="sp-h2">Upcoming payout</h2>
+                    <p className="sp-num text-[30px] font-bold leading-9">{usd(f.nextPayout.amountUsd)}</p>
+                    <p className="text-xs text-sp-text2">Scheduled for {d(f.nextPayout.date, true)} · locked, can’t be requested again</p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="sp-h2">Next automatic payout</h2>
+                    <p className="text-[30px] font-bold leading-9">{d(f.nextPayout.date, true)}</p>
+                    <p className="text-xs text-sp-text2">Any balance you don’t withdraw is paid then · weekly settlement</p>
+                  </>
+                )}
               </div>
             </div>
             <PayoutBadge status={f.nextPayout.status} />
@@ -76,7 +89,7 @@ async function Finance({ searchParams }: { searchParams: Promise<Record<string, 
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.9fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.9fr_1fr]">
         <section className="sp-card overflow-hidden">
           <div className="flex items-center justify-between px-5 pt-5 pb-4 sm:px-6">
             <h2 className="sp-h2">Payout history</h2>

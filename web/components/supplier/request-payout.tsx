@@ -30,9 +30,12 @@ export function RequestPayout({ available, minimum, account }: { available: numb
   const done = state.message && !state.errors;
   return (
     <>
-      <button type="button" disabled={available < minimum} onClick={() => { setStep("amount"); setAmount(available.toFixed(2)); setOpen(true); }} className="sp-btn sp-btn-primary h-11 rounded-full px-5">
-        Request payout
-      </button>
+      <div className="text-right">
+        <button type="button" disabled={available < minimum} onClick={() => { setStep("amount"); setAmount(available.toFixed(2)); setOpen(true); }} className="sp-btn sp-btn-primary h-11 rounded-full px-5 disabled:cursor-not-allowed disabled:opacity-50">
+          Request payout
+        </button>
+        {available < minimum && <p className="mt-1 text-[11px] text-sp-text2">Minimum {fmt(minimum)} available</p>}
+      </div>
       <dialog ref={dialog} onClose={() => setOpen(false)} className="m-auto w-[min(440px,calc(100vw-2rem))] rounded-[20px] border border-sp-border p-0 text-sp-text shadow-2xl backdrop:bg-[rgba(20,40,32,.32)]">
         <div className="p-6">
           <div className="flex items-start justify-between">
@@ -55,7 +58,7 @@ export function RequestPayout({ available, minimum, account }: { available: numb
               <label className="block">
                 <span className="text-sm font-semibold">Amount (USD)</span>
                 <input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} aria-invalid={Boolean(error)} className={`sp-input mt-1.5 h-12 text-lg font-semibold ${error ? "!border-[#BE3C36]" : ""}`} />
-                <span className={`mt-1 block text-xs ${error ? "text-[#BE3C36]" : "text-sp-text2"}`}>{error ?? `Available ${fmt(available)} · minimum ${fmt(minimum)}`}</span>
+                <span className={`mt-1 block text-xs ${error ? "text-[#BE3C36]" : "text-sp-text2"}`}>{error ?? `Available ${fmt(available)} · minimum ${fmt(minimum)} · scheduled payouts are excluded`}</span>
               </label>
               <button type="button" disabled={Boolean(error)} onClick={() => setStep("confirm")} className="sp-btn sp-btn-primary w-full">Continue</button>
             </div>

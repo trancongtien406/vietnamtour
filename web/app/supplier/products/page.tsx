@@ -29,7 +29,7 @@ async function List() {
   const revenue = new Map(overview.tourRevenue.map((t) => [t.slug, t]));
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <KpiCard icon={Layers} label="Live products" value={`${live.length}/${products.length}`} sub={`${products.length - live.length} drafts`} />
         <KpiCard icon={Star} label="Average rating" value={avg.toFixed(2)} sub={`${products.reduce((s, p) => s + p.reviewCount, 0).toLocaleString("en-US")} sample reviews`} />
         <KpiCard icon={Users} label="Seats per day" value={products.reduce((s, p) => s + p.maxGroupSize * p.startTimes.length, 0)} sub="Across all departures" />
