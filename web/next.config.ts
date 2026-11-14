@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
 
+const API_URL = process.env.API_URL ?? "http://localhost:4000";
+
 const nextConfig: NextConfig = {
-  /* config options here */
-  experimental: {
-    agentFeedback: true,
-  },
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
@@ -14,6 +12,10 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  // Browser code calls same-origin /api/*; Next forwards it to the NestJS API.
+  async rewrites() {
+    return [{ source: "/api/:path*", destination: `${API_URL}/api/:path*` }];
   },
 };
 
