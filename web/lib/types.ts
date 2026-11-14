@@ -86,20 +86,39 @@ export interface Slot {
   remaining: number;
 }
 
+export type BookingWithImage = Booking & { image: string };
+
+export interface DayRevenue {
+  day: string;
+  grossUsd: number;
+  revenueUsd: number;
+  commissionUsd: number;
+  netUsd: number;
+  bookings: number;
+}
+
 export interface SupplierOverview {
   totals: {
     bookings: number;
+    grossUsd: number;
+    refundsUsd: number;
     revenueUsd: number;
     commissionUsd: number;
     payoutUsd: number;
     guests: number;
     upcoming: number;
+    upcomingGuests: number;
     awaitingConfirmation: number;
+    pendingPayment: number;
     cancelled: number;
   };
-  revenueByDay: { day: string; revenueUsd: number }[];
-  topTours: { slug: string; title: string; bookings: number; guests: number; revenueUsd: number }[];
-  nextDepartures: Booking[];
+  deltas: { revenuePct: number | null; bookingsPct: number | null };
+  rangeDays: number;
+  revenueByDay: DayRevenue[];
+  topTours: { slug: string; title: string; image: string; bookings: number; guests: number; revenueUsd: number }[];
+  tourRevenue: SupplierOverview["topTours"];
+  nextDepartures: BookingWithImage[];
+  recentBookings: BookingWithImage[];
 }
 
 export type FieldErrors = Record<string, string>;
@@ -121,9 +140,11 @@ export interface Payout {
   periodStart: string;
   periodEnd: string;
   payoutDate: string;
-  status: "open" | "scheduled" | "paid";
+  status: "completed" | "scheduled" | "processing";
+  method: string;
   transactions: number;
   grossUsd: number;
+  refundsUsd: number;
   commissionUsd: number;
   netUsd: number;
 }
@@ -144,17 +165,13 @@ export interface SupplierSettings {
 
 export interface SupplierFinance {
   commissionRate: number;
-  totals: {
-    grossUsd: number;
-    commissionUsd: number;
-    netUsd: number;
-    refundsUsd: number;
-    paidOutUsd: number;
-    scheduledUsd: number;
-    openUsd: number;
-  };
-  nextPayout: { date: string; amountUsd: number; status: string } | null;
+  periodDays: number;
+  totals: { grossUsd: number; refundsUsd: number; commissionUsd: number; netUsd: number; bookings: number; paidOutUsd: number };
+  deltas: { grossPct: number | null; netPct: number | null; bookingsPct: number | null; commissionPct: number | null };
+  balance: { availableUsd: number; pendingUsd: number; minimumPayoutUsd: number };
+  nextPayout: { date: string; amountUsd: number; status: "scheduled" | "collecting" };
   payoutAccount: SupplierSettings["payout"];
+  series: { day: string; grossUsd: number; netUsd: number; commissionUsd: number }[];
   payouts: Payout[];
   transactions: FinanceTx[];
 }

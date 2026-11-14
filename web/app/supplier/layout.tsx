@@ -1,31 +1,33 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import { Suspense } from "react";
-import { Logo } from "@/components/logo";
-import { SupplierNav } from "@/components/supplier-nav";
+import { MobileTopBar, SupplierSidebar } from "@/components/supplier/sidebar";
+import { api } from "@/lib/api";
+
+const sans = DM_Sans({ variable: "--font-dm-sans", subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700"] });
+const serif = DM_Serif_Display({ variable: "--font-dm-serif", subsets: ["latin", "latin-ext"], weight: "400" });
 
 export const metadata: Metadata = { title: { default: "Supplier portal", template: "%s · Supplier portal" } };
 
+async function MobileBar() {
+  const o = await api.supplier.overview().catch(() => null);
+  return <MobileTopBar attention={(o?.totals.awaitingConfirmation ?? 0) + (o?.totals.pendingPayment ?? 0)} />;
+}
+
 export default function SupplierLayout({ children }: LayoutProps<"/supplier">) {
   return (
-    <div className="min-h-screen bg-[#f7f6f2] lg:grid lg:grid-cols-[248px_1fr]">
-      <aside className="border-b border-mist bg-white lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
-        <div className="flex items-center justify-between px-5 py-4 lg:block">
-          <Logo />
-          <p className="text-xs font-semibold uppercase tracking-wider text-lotus lg:mt-1 lg:pl-11">Supplier</p>
-        </div>
-        <Suspense fallback={<div className="h-12" />}>
-          <SupplierNav />
+    <div className={`${sans.variable} ${serif.variable} sp-root min-h-screen bg-sp-bg lg:flex`}>
+      <Suspense fallback={<div className="hidden w-[248px] shrink-0 border-r border-sp-border bg-sp-warm lg:block" />}>
+        <SupplierSidebar />
+      </Suspense>
+      <div className="min-w-0 flex-1">
+        <Suspense fallback={<div className="h-16 border-b border-sp-border bg-sp-warm lg:hidden" />}>
+          <MobileBar />
         </Suspense>
-        <div className="mx-4 mt-6 hidden rounded-2xl bg-sand p-4 text-sm lg:block">
-          <p className="font-semibold">Lotus Trails Vietnam</p>
-          <p className="text-ink/60">Licensed tour operator · Đà Nẵng</p>
-          <Link href="/" className="mt-3 inline-block font-semibold text-jade hover:underline">View website →</Link>
-        </div>
-      </aside>
-      <div className="min-w-0 px-5 py-8 md:px-8">
-        {children}
-        <p className="mt-10 text-center text-xs text-ink/40">Portfolio demo · Sample data · Sandbox payments</p>
+        <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
+          {children}
+          <p className="mt-10 text-center text-xs text-sp-text3">Portfolio demo · Sample data · Sandbox payments</p>
+        </main>
       </div>
     </div>
   );

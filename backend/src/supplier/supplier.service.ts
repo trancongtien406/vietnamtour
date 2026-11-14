@@ -9,6 +9,18 @@ import { BookingsStore } from '../bookings/bookings.store';
 import { CatalogService } from '../catalog/catalog.service';
 
 export const COMMISSION_RATE = 0.2;
+const MIN_PAYOUT = 50;
+export interface Tx {
+  id: string;
+  type: 'payment' | 'refund';
+  at: string;
+  bookingCode: string;
+  tourTitle: string;
+  guest: string;
+  grossUsd: number;
+  commissionUsd: number;
+  netUsd: number;
+}
 const DAY = 864e5;
 const round2 = (n: number) => Math.round(n * 100) / 100;
 const isoDay = (d: Date) => d.toISOString().slice(0, 10);
@@ -41,6 +53,7 @@ export interface SupplierSettings {
 interface SupplierState {
   settings: SupplierSettings;
   replies: Record<string, { text: string; at: string }>;
+  payoutRequests: { amountUsd: number; at: string }[];
 }
 
 const DEFAULT_SETTINGS: SupplierSettings = {
@@ -56,7 +69,7 @@ const DEFAULT_SETTINGS: SupplierSettings = {
   payout: {
     bankName: 'Vietcombank',
     accountName: 'LOTUS TRAILS TRAVEL CO LTD',
-    accountLast4: '4068',
+    accountLast4: '8901',
     schedule: 'weekly',
   },
   notifications: {
@@ -91,25 +104,172 @@ export class SupplierService {
     : process.env.BOOKINGS_FILE === ''
       ? ''
       : 'data/supplier.json';
-  private state: SupplierState = this.load();
+  private state: SupplierState;
 
   constructor(
     private readonly store: BookingsStore,
     private readonly catalog: CatalogService,
-  ) {}
+  ) {
+    this.state = this.load();
+  }
 
-  finance(now = new Date()) {
-    const tx: {
-      id: string;
-      type: 'payment' | 'refund';
-      at: string;
-      bookingCode: string;
-      tourTitle: string;
-      guest: string;
-      grossUsd: number;
-      commissionUsd: number;
-      netUsd: number;
-    }[] = [];
+  finance(days = 30, now = new Date()) {
+    const tx = this.transactions();
+    const period = Math.min(Math.max(Math.round(days) || 30, 7), 365);
+    const since = now.getTime() - period * DAY;
+    const prevSince = since - period * DAY;
+    const sumTx = (list: Tx[]) => {
+      const gross = round2(
+        list
+          .filter((t) => t.type === 'payment')
+          .reduce((s, t) => s + t.grossUsd, 0),
+      );
+      const refunds = round2(
+        -list
+          .filter((t) => t.type === 'refund')
+          .reduce((s, t) => s + t.grossUsd, 0),
+      );
+      const commission = round2(list.reduce((s, t) => s + t.commissionUsd, 0));
+      return {
+        grossUsd: gross,
+        refundsUsd: refunds,
+        commissionUsd: commission,
+        // Net = Gross − Commission − Refunds
+        netUsd: round2(gross - refunds - commission),
+        bookings: list.filter((t) => t.type === 'payment').length,
+      };
+    };
+    const at = (t: Tx) => new Date(t.at).getTime();
+    const cur = sumTx(
+      tx.filter((t) => at(t) >= since && at(t) <= now.getTime()),
+    );
+    const prev = sumTx(tx.filter((t) => at(t) >= prevSince && at(t) < since));
+    const pct = (c: number, p: number) =>
+      p > 0 ? Math.round(((c - p) / p) * 1000) / 10 : null;
+
+    const series = Array.from({ length: period }, (_, i) => {
+      const day = isoDay(new Date(now.getTime() - (period - 1 - i) * DAY));
+      const t = sumTx(tx.filter((x) => x.at.slice(0, 10) === day));
+      return {
+        day,
+        grossUsd: t.grossUsd,
+        netUsd: t.netUsd,
+        commissionUsd: t.commissionUsd,
+      };
+    });
+
+    // Weekly settlement: Monday–Sunday, paid out on the following Wednesday.
+    const current = weekStart(now).getTime();
+    const weeks = new Map<number, Tx[]>();
+    for (const t of tx) {
+      const k = weekStart(new Date(t.at)).getTime();
+      weeks.set(k, [...(weeks.get(k) ?? []), t]);
+    }
+    const method = `Bank transfer · ${this.state.settings.payout.bankName} ••${this.state.settings.payout.accountLast4}`;
+    const weekly = [...weeks.entries()]
+      .filter(([start]) => start < current)
+      .sort((a, b) => a[0] - b[0])
+      .map(([start, list], i) => {
+        const t = sumTx(list);
+        const payoutDate = new Date(start + 9 * DAY);
+        return {
+          id: `PO-2026-${String(31 + i).padStart(4, '0')}`,
+          periodStart: isoDay(new Date(start)),
+          periodEnd: isoDay(new Date(start + 6 * DAY)),
+          payoutDate: isoDay(payoutDate),
+          status:
+            payoutDate.getTime() <= now.getTime() ? 'completed' : 'scheduled',
+          method,
+          transactions: list.length,
+          grossUsd: t.grossUsd,
+          refundsUsd: t.refundsUsd,
+          commissionUsd: t.commissionUsd,
+          netUsd: t.netUsd,
+        };
+      });
+    const openWeek = sumTx(weeks.get(current) ?? []);
+    const requested = this.state.payoutRequests.filter(
+      (r) => r.at.slice(0, 10) >= isoDay(new Date(current)),
+    );
+    const requestedUsd = round2(requested.reduce((s, r) => s + r.amountUsd, 0));
+    const manual = this.state.payoutRequests.map((r, i) => ({
+      id: `PO-2026-R${String(i + 1).padStart(3, '0')}`,
+      periodStart: r.at.slice(0, 10),
+      periodEnd: r.at.slice(0, 10),
+      payoutDate: isoDay(new Date(new Date(r.at).getTime() + 2 * DAY)),
+      status: 'processing',
+      method,
+      transactions: 0,
+      grossUsd: r.amountUsd,
+      refundsUsd: 0,
+      commissionUsd: 0,
+      netUsd: r.amountUsd,
+    }));
+    const payouts = [...manual, ...weekly.reverse()];
+    const scheduled = payouts.find((p) => p.status === 'scheduled');
+    const available = round2(Math.max(0, openWeek.netUsd - requestedUsd));
+    const nextWeekPayout = isoDay(new Date(current + 9 * DAY));
+    return {
+      commissionRate: COMMISSION_RATE,
+      periodDays: period,
+      totals: {
+        ...cur,
+        paidOutUsd: round2(
+          payouts
+            .filter((p) => p.status === 'completed')
+            .reduce((a, p) => a + p.netUsd, 0),
+        ),
+      },
+      deltas: {
+        grossPct: pct(cur.grossUsd, prev.grossUsd),
+        netPct: pct(cur.netUsd, prev.netUsd),
+        bookingsPct: pct(cur.bookings, prev.bookings),
+        commissionPct: pct(cur.commissionUsd, prev.commissionUsd),
+      },
+      balance: {
+        availableUsd: available,
+        pendingUsd: round2((scheduled?.netUsd ?? 0) + requestedUsd),
+        minimumPayoutUsd: MIN_PAYOUT,
+      },
+      nextPayout: scheduled
+        ? {
+            date: scheduled.payoutDate,
+            amountUsd: scheduled.netUsd,
+            status: 'scheduled',
+          }
+        : { date: nextWeekPayout, amountUsd: available, status: 'collecting' },
+      payoutAccount: this.state.settings.payout,
+      series,
+      payouts,
+      transactions: tx,
+    };
+  }
+
+  requestPayout(amount: unknown, now = new Date()) {
+    const value = Number(amount);
+    const { availableUsd } = this.finance(30, now).balance;
+    const errors: Record<string, string> = {};
+    if (!Number.isFinite(value) || value <= 0)
+      errors.amountUsd = 'Enter an amount.';
+    else if (value < MIN_PAYOUT)
+      errors.amountUsd = `Minimum payout is $${MIN_PAYOUT}.`;
+    else if (value > availableUsd)
+      errors.amountUsd = `You can withdraw up to $${availableUsd.toFixed(2)}.`;
+    if (Object.keys(errors).length)
+      throw new BadRequestException({
+        message: 'Invalid payout request',
+        errors,
+      });
+    this.state.payoutRequests.push({
+      amountUsd: round2(value),
+      at: now.toISOString(),
+    });
+    this.save();
+    return this.finance(30, now);
+  }
+
+  private transactions(): Tx[] {
+    const tx: Tx[] = [];
     for (const b of this.store.all()) {
       if (!b.payment) continue;
       tx.push({
@@ -140,69 +300,7 @@ export class SupplierService {
         });
       }
     }
-    tx.sort((a, b) => b.at.localeCompare(a.at));
-
-    const current = weekStart(now).getTime();
-    const weeks = new Map<number, (typeof tx)[number][]>();
-    for (const t of tx) {
-      const k = weekStart(new Date(t.at)).getTime();
-      weeks.set(k, [...(weeks.get(k) ?? []), t]);
-    }
-    const payouts = [...weeks.entries()]
-      .sort((a, b) => b[0] - a[0])
-      .map(([start, list]) => {
-        const sum = (f: 'grossUsd' | 'commissionUsd' | 'netUsd') =>
-          round2(list.reduce((s, t) => s + t[f], 0));
-        const payoutDate = new Date(start + 9 * DAY); // Wednesday after the week closes
-        const status =
-          start >= current
-            ? 'open'
-            : payoutDate.getTime() <= now.getTime()
-              ? 'paid'
-              : 'scheduled';
-        return {
-          id: `PO-${isoDay(new Date(start)).replace(/-/g, '')}`,
-          periodStart: isoDay(new Date(start)),
-          periodEnd: isoDay(new Date(start + 6 * DAY)),
-          payoutDate: isoDay(payoutDate),
-          status,
-          transactions: list.length,
-          grossUsd: sum('grossUsd'),
-          commissionUsd: sum('commissionUsd'),
-          netUsd: sum('netUsd'),
-        };
-      });
-    const total = (f: 'grossUsd' | 'commissionUsd' | 'netUsd') =>
-      round2(tx.reduce((s, t) => s + t[f], 0));
-    const byStatus = (s: string) =>
-      round2(
-        payouts.filter((p) => p.status === s).reduce((a, p) => a + p.netUsd, 0),
-      );
-    const next = [...payouts]
-      .reverse()
-      .find((p) => p.status === 'scheduled' || p.status === 'open');
-    return {
-      commissionRate: COMMISSION_RATE,
-      totals: {
-        grossUsd: total('grossUsd'),
-        commissionUsd: total('commissionUsd'),
-        netUsd: total('netUsd'),
-        refundsUsd: round2(
-          -tx
-            .filter((t) => t.type === 'refund')
-            .reduce((s, t) => s + t.grossUsd, 0),
-        ),
-        paidOutUsd: byStatus('paid'),
-        scheduledUsd: byStatus('scheduled'),
-        openUsd: byStatus('open'),
-      },
-      nextPayout: next
-        ? { date: next.payoutDate, amountUsd: next.netUsd, status: next.status }
-        : null,
-      payoutAccount: this.state.settings.payout,
-      payouts,
-      transactions: tx,
-    };
+    return tx.sort((a, b) => b.at.localeCompare(a.at));
   }
 
   reviews(filter: { rating?: number; tour?: string } = {}) {
@@ -317,6 +415,7 @@ export class SupplierService {
     const fresh = (): SupplierState => ({
       settings: structuredClone(DEFAULT_SETTINGS),
       replies: {},
+      payoutRequests: [],
     });
     if (!this.file || !existsSync(this.file)) {
       const s = fresh();
@@ -329,6 +428,26 @@ export class SupplierService {
         text: 'Merci Pierre! Next time try the bánh mì stop first, before you get too full. See you again in Hội An.',
         at: '2026-11-01T14:40:00.000Z',
       };
+      const templates = [
+        (name: string) =>
+          `Thank you so much, ${name}! Our guides will be thrilled to read this. Hope to see you again in Vietnam.`,
+        (name: string) =>
+          `Cảm ơn ${name}! We are glad you enjoyed it and have shared your feedback with the whole team.`,
+        (name: string) =>
+          `Thanks for the honest feedback, ${name}. We have adjusted the schedule so the last stop is less rushed.`,
+      ];
+      let n = 0;
+      for (const t of this.catalog.listAllTours()) {
+        for (const r of this.catalog.findTour(t.slug).reviews) {
+          n++;
+          const id = reviewId(t.slug, r.author, r.date);
+          if (s.replies[id] || n % 5 > 1) continue;
+          const first = r.author.split(' ')[0];
+          const text = (r.rating < 5 ? templates[2] : templates[n % 2])(first);
+          const at = new Date(Date.parse(`${r.date}T10:00:00+07:00`) + 864e5);
+          s.replies[id] = { text, at: at.toISOString() };
+        }
+      }
       return s;
     }
     try {

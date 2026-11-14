@@ -58,9 +58,10 @@ export const api = {
   cancel: (code: string) =>
     request<Booking>(`/bookings/${encodeURIComponent(code)}/cancel`, { method: "POST" }),
   supplier: {
-    overview: () => request<SupplierOverview>("/supplier/overview"),
+    overview: (days = 14) => request<SupplierOverview>(`/supplier/overview?days=${days}`),
     bookings: (status?: string) =>
       request<Booking[]>(`/supplier/bookings${status ? `?status=${encodeURIComponent(status)}` : ""}`),
+    booking: (code: string) => request<Booking>(`/supplier/bookings/${encodeURIComponent(code)}`),
     act: (code: string, action: string) =>
       request<Booking>(`/supplier/bookings/${encodeURIComponent(code)}/${action}`, { method: "POST" }),
     products: () => request<TourSummary[]>("/supplier/products"),
@@ -74,7 +75,9 @@ export const api = {
       request<{ date: string; slots: { time: string; capacity: number; booked: number; remaining: number }[] }[]>(
         `/supplier/calendar?tour=${encodeURIComponent(tour)}&days=${days}`,
       ),
-    finance: () => request<SupplierFinance>("/supplier/finance"),
+    finance: (days = 30) => request<SupplierFinance>(`/supplier/finance?days=${days}`),
+    requestPayout: (amountUsd: number) =>
+      request<SupplierFinance>("/supplier/payouts", { method: "POST", body: JSON.stringify({ amountUsd }) }),
     reviews: (rating?: string) =>
       request<SupplierReviews>(`/supplier/reviews${rating ? `?rating=${encodeURIComponent(rating)}` : ""}`),
     reply: (id: string, text: string) =>

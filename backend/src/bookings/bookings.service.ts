@@ -288,6 +288,20 @@ export class BookingsService implements OnModuleInit {
         'Declined by supplier, fully refunded',
       );
     }
+    if (
+      action === 'cancel' &&
+      ['pending_payment', 'awaiting_supplier', 'confirmed'].includes(b.status)
+    ) {
+      b.refundUsd = b.payment ? b.totalUsd : 0;
+      return this.transition(
+        b,
+        'cancelled',
+        now,
+        b.payment
+          ? 'Cancelled by operator, fully refunded'
+          : 'Cancelled by operator',
+      );
+    }
     if (action === 'check-in' && b.status === 'confirmed')
       return this.transition(b, 'checked_in', now, 'Voucher scanned');
     throw new ConflictException(
@@ -331,12 +345,13 @@ export class BookingsService implements OnModuleInit {
       });
   }
 
-  supplierOverview(now = new Date()) {
+  supplierOverview(days = 14, now = new Date()) {
+    const n = [7, 14, 30].includes(days) ? days : 14;
     const all = this.store.all();
     const paid = all.filter((b) => b.payment);
-    const revenue = round2(
-      paid.reduce((s, b) => s + b.totalUsd - b.refundUsd, 0),
-    );
+    const gross = round2(paid.reduce((s, b) => s + b.totalUsd, 0));
+    const refunds = round2(paid.reduce((s, b) => s + b.refundUsd, 0));
+    const revenue = round2(gross - refunds);
     const today = isoDay(now);
     const upcoming = all.filter(
       (b) =>
@@ -348,6 +363,7 @@ export class BookingsService implements OnModuleInit {
       {
         slug: string;
         title: string;
+        image: string;
         bookings: number;
         guests: number;
         revenueUsd: number;
@@ -357,6 +373,7 @@ export class BookingsService implements OnModuleInit {
       const row = byTour.get(b.tourSlug) ?? {
         slug: b.tourSlug,
         title: b.tourTitle,
+        image: this.safeTour(b.tourSlug)?.images[0] ?? '',
         bookings: 0,
         guests: 0,
         revenueUsd: 0,
@@ -366,39 +383,68 @@ export class BookingsService implements OnModuleInit {
       row.revenueUsd = round2(row.revenueUsd + b.totalUsd - b.refundUsd);
       byTour.set(b.tourSlug, row);
     }
-    const last14 = Array.from({ length: 14 }, (_, i) => {
-      const day = isoDay(addDays(now, i - 13));
+    const dayTotals = (day: string) => {
+      const list = paid.filter((b) => b.payment!.paidAt.slice(0, 10) === day);
+      const g = round2(list.reduce((s, b) => s + b.totalUsd, 0));
+      const r = round2(list.reduce((s, b) => s + b.refundUsd, 0));
       return {
         day,
-        revenueUsd: round2(
-          paid
-            .filter((b) => b.payment!.paidAt.slice(0, 10) === day)
-            .reduce((s, b) => s + b.totalUsd - b.refundUsd, 0),
-        ),
+        grossUsd: g,
+        revenueUsd: round2(g - r),
+        commissionUsd: round2((g - r) * 0.2),
+        netUsd: round2((g - r) * 0.8),
+        bookings: list.length,
       };
-    });
+    };
+    const series = (from: number, len: number) =>
+      Array.from({ length: len }, (_, i) =>
+        dayTotals(isoDay(addDays(now, from + i))),
+      );
+    const last14 = series(1 - n, n);
+    const prev14 = series(1 - 2 * n, n);
+    const sum = (l: typeof last14, k: 'revenueUsd' | 'bookings') =>
+      l.reduce((s, d) => s + d[k], 0);
+    const pct = (cur: number, prev: number) =>
+      prev > 0 ? Math.round(((cur - prev) / prev) * 1000) / 10 : null;
+    const imageFor = (slug: string) => this.safeTour(slug)?.images[0] ?? '';
     return {
       totals: {
         bookings: all.length,
+        grossUsd: gross,
+        refundsUsd: refunds,
         revenueUsd: revenue,
         commissionUsd: round2(revenue * 0.2),
         payoutUsd: round2(revenue * 0.8),
         guests: paid.reduce((s, b) => s + b.adults + b.children, 0),
         upcoming: upcoming.length,
+        upcomingGuests: upcoming.reduce((s, b) => s + b.adults + b.children, 0),
         awaitingConfirmation: all.filter(
           (b) => b.status === 'awaiting_supplier',
         ).length,
+        pendingPayment: all.filter((b) => b.status === 'pending_payment')
+          .length,
         cancelled: all.filter((b) => b.status === 'cancelled').length,
       },
+      deltas: {
+        revenuePct: pct(sum(last14, 'revenueUsd'), sum(prev14, 'revenueUsd')),
+        bookingsPct: pct(sum(last14, 'bookings'), sum(prev14, 'bookings')),
+      },
+      rangeDays: n,
       revenueByDay: last14,
       topTours: [...byTour.values()]
         .sort((a, b) => b.revenueUsd - a.revenueUsd)
         .slice(0, 5),
+      tourRevenue: [...byTour.values()],
       nextDepartures: upcoming
         .sort((a, b) =>
           `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`),
         )
-        .slice(0, 6),
+        .slice(0, 6)
+        .map((b) => ({ ...b, image: imageFor(b.tourSlug) })),
+      recentBookings: [...all]
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .slice(0, 6)
+        .map((b) => ({ ...b, image: imageFor(b.tourSlug) })),
     };
   }
 
@@ -463,11 +509,20 @@ export class BookingsService implements OnModuleInit {
       ['Chloe Martin', 'chloe.martin@example.com', '+33 7 55 55 12 34'],
     ];
     const tours = this.catalog.listAllTours();
-    const total = 40;
+    const notes = [
+      'Vegetarian meals for one guest, please.',
+      '',
+      'Celebrating our anniversary!',
+      'Staying at Little Riverside Hội An, pick-up appreciated.',
+      '',
+      'One guest has a peanut allergy.',
+      'First time in Vietnam, any tips welcome.',
+    ];
+    const total = 96;
     for (let i = 0; i < total; i++) {
       const [fullName, email, phone] = guests[i % guests.length];
       const tour = this.catalog.findTour(tours[(i * 5) % tours.length].slug);
-      const createdAt = addDays(now, -20 + Math.floor((i * 21) / total));
+      const createdAt = addDays(now, -55 + Math.floor((i * 56) / total));
       const date = isoDay(addDays(createdAt, 3 + ((i * 7) % 24)));
       try {
         const b = this.create(
@@ -480,6 +535,7 @@ export class BookingsService implements OnModuleInit {
             fullName,
             email,
             phone,
+            note: notes[i % notes.length],
           },
           createdAt,
         );

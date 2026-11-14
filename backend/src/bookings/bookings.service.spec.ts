@@ -136,8 +136,11 @@ describe('BookingsService', () => {
   it('lists bookings by email and builds the supplier overview', () => {
     service.pay(service.create(valid, now).code, card, now);
     expect(service.findByEmail('a@example.com')).toHaveLength(1);
-    const o = service.supplierOverview(now);
+    const o = service.supplierOverview(14, now);
     expect(o.totals.revenueUsd).toBe(105.3);
     expect(o.topTours[0].slug).toBe('hoi-an-lantern-food-walk');
+    expect(o.totals.payoutUsd).toBeCloseTo(84.24);
+    expect(o.revenueByDay).toHaveLength(14);
+    expect(o.revenueByDay.at(-1)?.grossUsd).toBe(105.3);
   });
 });

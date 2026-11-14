@@ -1,96 +1,159 @@
+import { AlertCircle, CalendarCheck, CalendarDays, Coins, Wallet } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { SupplierActions } from "@/components/supplier-actions";
+import { RevenueChart } from "@/components/supplier/charts";
+import { KpiCard } from "@/components/supplier/kpi-card";
+import { PageHeader } from "@/components/supplier/page-header";
+import { RangeSelect } from "@/components/supplier/range-select";
+import { BookingBadge } from "@/components/supplier/status-badge";
+import { SupplierBookingButton } from "@/components/supplier/booking-button";
 import { api } from "@/lib/api";
-import { STATUS_LABEL, STATUS_STYLE, longDate, usd } from "@/lib/format";
+import { longDate, usd } from "@/lib/format";
 
-export default function SupplierDashboard() {
+function greeting() {
+  const h = Number(new Date().toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Asia/Ho_Chi_Minh" }));
+  return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+}
+
+export default function SupplierDashboard({ searchParams }: PageProps<"/supplier">) {
   return (
-    <>
-      <h1 className="font-display text-3xl font-bold">Good afternoon, Lotus Trails 👋</h1>
-      <p className="mt-1 text-ink/60">Here’s how your experiences are performing.</p>
-      <Suspense fallback={<div className="mt-8 h-96 animate-pulse rounded-2xl bg-mist/60" />}>
-        <Overview />
-      </Suspense>
-    </>
+    <Suspense fallback={<DashboardSkeleton />}>
+      <Dashboard searchParams={searchParams} />
+    </Suspense>
   );
 }
 
-async function Overview() {
-  const o = await api.supplier.overview();
-  const max = Math.max(...o.revenueByDay.map((d) => d.revenueUsd), 1);
-  const kpis = [
-    { label: "Gross revenue", value: usd(o.totals.revenueUsd), sub: `${o.totals.guests} guests` },
-    { label: "Your payout (80%)", value: usd(o.totals.payoutUsd), sub: `Commission ${usd(o.totals.commissionUsd)}` },
-    { label: "Upcoming departures", value: o.totals.upcoming, sub: `${o.totals.bookings} bookings total` },
-    { label: "Needs your action", value: o.totals.awaitingConfirmation, sub: `${o.totals.cancelled} cancelled`, highlight: o.totals.awaitingConfirmation > 0 },
-  ];
+function DashboardSkeleton() {
   return (
-    <div className="mt-8 space-y-6">
+    <div className="space-y-6">
+      <div className="h-16 w-96 animate-pulse rounded-xl bg-sp-muted" />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-[124px] animate-pulse rounded-2xl bg-sp-muted" />)}</div>
+      <div className="h-80 animate-pulse rounded-2xl bg-sp-muted" />
+    </div>
+  );
+}
+
+async function Dashboard({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = await searchParams;
+  const days = Number(sp.days) || 14;
+  const o = await api.supplier.overview(days);
+  const t = o.totals;
+  const attention = t.awaitingConfirmation + t.pendingPayment;
+  return (
+    <div className="space-y-6">
+      <PageHeader title={<>{greeting()}, Lotus Trails <span aria-hidden>👋</span></>} subtitle="Here’s how your experiences are performing." />
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((k) => (
-          <div key={k.label} className={`rounded-2xl p-5 ${k.highlight ? "bg-lotus text-white" : "bg-white ring-1 ring-mist"}`}>
-            <p className={`text-sm ${k.highlight ? "text-white/80" : "text-ink/60"}`}>{k.label}</p>
-            <p className="mt-1 text-3xl font-bold">{k.value}</p>
-            <p className={`mt-1 text-xs ${k.highlight ? "text-white/80" : "text-ink/50"}`}>{k.sub}</p>
-          </div>
-        ))}
+        <KpiCard icon={Coins} label="Gross revenue" value={usd(t.grossUsd)} sub={`${t.bookings} bookings · ${t.guests} guests`} />
+        <KpiCard icon={Wallet} label="Your payout (80%)" value={usd(t.payoutUsd)} sub={`Commission ${usd(t.commissionUsd)} · refunds ${usd(t.refundsUsd)}`} />
+        <KpiCard icon={CalendarDays} label="Upcoming departures" value={t.upcoming} sub={`${t.upcomingGuests} guests booked`} />
+        <KpiCard
+          icon={AlertCircle}
+          label="Needs your action"
+          value={attention}
+          sub={`${t.awaitingConfirmation} to confirm · ${t.pendingPayment} unpaid · ${t.cancelled} cancelled`}
+          attention={attention > 0}
+          href="/supplier/bookings?status=attention"
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-        <section className="rounded-2xl bg-white p-5 ring-1 ring-mist">
-          <h2 className="font-semibold">Revenue, last 14 days</h2>
-          <div className="mt-6 flex h-48 items-end gap-2" role="img" aria-label="Daily revenue bar chart">
-            {o.revenueByDay.map((d) => (
-              <div key={d.day} className="group flex min-w-0 flex-1 flex-col items-center gap-2">
-                <div className="flex h-40 w-full items-end">
-                  <div className="w-full rounded-t-md bg-jade/80 transition group-hover:bg-lotus" style={{ height: `${Math.max(2, (d.revenueUsd / max) * 160)}px` }} title={`${d.day}: ${usd(d.revenueUsd)}`} />
-                </div>
-                <span className="text-[10px] text-ink/45">{d.day.slice(8)}</span>
-              </div>
-            ))}
+        <section className="sp-card p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="sp-h2">Revenue, last {o.rangeDays} days</h2>
+              <p className="text-xs text-sp-text2">
+                {usd(o.revenueByDay.reduce((s, d) => s + d.grossUsd, 0))} gross
+                {o.deltas.revenuePct !== null && (
+                  <span className={o.deltas.revenuePct >= 0 ? "text-[#08734D]" : "text-[#BE3C36]"}> · {o.deltas.revenuePct >= 0 ? "+" : ""}{o.deltas.revenuePct}% vs. previous {o.rangeDays} days</span>
+                )}
+              </p>
+            </div>
+            <RangeSelect value={o.rangeDays} options={[[7, "Last 7 days"], [14, "Last 14 days"], [30, "Last 30 days"]]} />
           </div>
+          <div className="mt-4"><RevenueChart data={o.revenueByDay} /></div>
         </section>
-        <section className="rounded-2xl bg-white p-5 ring-1 ring-mist">
-          <h2 className="font-semibold">Top experiences</h2>
-          <ul className="mt-4 space-y-3">
-            {o.topTours.map((t, i) => (
-              <li key={t.slug} className="flex items-center gap-3 text-sm">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-sand text-xs font-bold">{i + 1}</span>
-                <span className="min-w-0 flex-1 truncate">{t.title}</span>
-                <span className="text-ink/55">{t.bookings} bk</span>
-                <span className="w-20 text-right font-semibold">{usd(t.revenueUsd)}</span>
+        <section className="sp-card p-5 sm:p-6">
+          <div className="flex items-center justify-between">
+            <h2 className="sp-h2">Top experiences</h2>
+            <Link href="/supplier/products" className="text-sm font-semibold text-forest hover:underline">View all</Link>
+          </div>
+          <ul className="mt-4 divide-y divide-sp-border">
+            {o.topTours.map((tt, i) => (
+              <li key={tt.slug} className="flex items-center gap-3 py-3">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sp-muted text-xs font-bold">{i + 1}</span>
+                <div className="relative h-10 w-14 shrink-0 overflow-hidden rounded-lg"><Image src={tt.image} alt="" fill sizes="56px" className="object-cover" /></div>
+                <span className="min-w-0 flex-1 truncate font-medium">{tt.title}</span>
+                <span className="hidden text-xs text-sp-text2 sm:inline">{tt.bookings} bookings</span>
+                <span className="sp-num w-24 text-right font-semibold">{usd(tt.revenueUsd)}</span>
               </li>
             ))}
           </ul>
         </section>
       </div>
 
-      <section className="rounded-2xl bg-white ring-1 ring-mist">
-        <div className="flex items-center justify-between p-5">
-          <h2 className="font-semibold">Next departures</h2>
-          <Link href="/supplier/bookings" className="text-sm font-semibold text-jade hover:underline">All bookings →</Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-sm">
-            <thead className="border-y border-mist bg-sand/50 text-left text-xs uppercase tracking-wide text-ink/55">
-              <tr><th className="px-5 py-2.5">Date</th><th className="px-5 py-2.5">Experience</th><th className="px-5 py-2.5">Lead traveller</th><th className="px-5 py-2.5">Guests</th><th className="px-5 py-2.5">Status</th><th className="px-5 py-2.5">Action</th></tr>
-            </thead>
-            <tbody>
-              {o.nextDepartures.map((b) => (
-                <tr key={b.code} className="border-b border-mist/70 last:border-0">
-                  <td className="whitespace-nowrap px-5 py-3">{longDate(b.date)}<span className="block text-xs text-ink/50">{b.time}</span></td>
-                  <td className="max-w-64 truncate px-5 py-3">{b.tourTitle}</td>
-                  <td className="px-5 py-3">{b.fullName}</td>
-                  <td className="px-5 py-3">{b.adults + b.children}</td>
-                  <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_STYLE[b.status]}`}>{STATUS_LABEL[b.status]}</span></td>
-                  <td className="px-5 py-3"><SupplierActions booking={b} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <div className="grid gap-6 2xl:grid-cols-[1.6fr_1fr]">
+        <section className="sp-card overflow-hidden">
+          <div className="flex items-center justify-between px-5 pt-5 pb-4 sm:px-6">
+            <h2 className="sp-h2">Upcoming departures</h2>
+            <Link href="/supplier/bookings" className="text-sm font-semibold text-forest hover:underline">View all bookings →</Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="sp-table min-w-[820px]">
+              <thead><tr><th>Date</th><th>Experience</th><th>Lead traveller</th><th>Guests</th><th>Status</th><th className="text-right">Action</th></tr></thead>
+              <tbody>
+                {o.nextDepartures.map((b) => (
+                  <tr key={b.code}>
+                    <td className="whitespace-nowrap">
+                      <div className="flex items-center gap-2.5">
+                        <CalendarCheck className="h-4 w-4 text-sp-text3" />
+                        <div>{longDate(b.date)}<span className="block text-xs text-sp-text2">{b.time}</span></div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-9 w-12 shrink-0 overflow-hidden rounded-md"><Image src={b.image} alt="" fill sizes="48px" className="object-cover" /></div>
+                        <span className="max-w-64 truncate">{b.tourTitle}</span>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap">{b.fullName}</td>
+                    <td className="sp-num">{b.adults + b.children}</td>
+                    <td><BookingBadge booking={b} /></td>
+                    <td className="text-right">
+                      {b.status === "confirmed" ? (
+                        <SupplierBookingButton code={b.code} action="check-in" label="Check in" />
+                      ) : (
+                        <Link href={`/supplier/bookings?booking=${b.code}`} className="sp-btn sp-btn-outline h-9 border-orange/60 text-orange">View details</Link>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section className="sp-card p-5 sm:p-6">
+          <h2 className="sp-h2">Recent bookings</h2>
+          <ul className="mt-3 divide-y divide-sp-border">
+            {o.recentBookings.map((b) => (
+              <li key={b.code}>
+                <Link href={`/supplier/bookings?booking=${b.code}`} className="sp-focus -mx-2 flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-[#FFFAF5]">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-forest-light text-sm font-semibold text-forest">{b.fullName[0]}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{b.fullName}</p>
+                    <p className="truncate text-xs text-sp-text2">{b.tourTitle}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="sp-num font-semibold">{usd(b.totalUsd)}</p>
+                    <p className="font-mono text-[11px] text-sp-text3">{b.code}</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </div>
   );
 }

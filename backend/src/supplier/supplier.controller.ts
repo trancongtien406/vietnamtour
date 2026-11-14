@@ -26,8 +26,8 @@ export class SupplierController {
   ) {}
 
   @Get('overview')
-  overview() {
-    return this.bookings.supplierOverview();
+  overview(@Query('days') days?: string) {
+    return this.bookings.supplierOverview(Number(days) || 14);
   }
 
   @Get('bookings')
@@ -80,8 +80,14 @@ export class SupplierController {
   }
 
   @Get('finance')
-  finance() {
-    return this.supplier.finance();
+  finance(@Query('days') days?: string) {
+    return this.supplier.finance(Number(days) || 30);
+  }
+
+  @Post('payouts')
+  @HttpCode(200)
+  requestPayout(@Body() body: { amountUsd?: unknown }) {
+    return this.supplier.requestPayout(body?.amountUsd);
   }
 
   @Get('reviews')

@@ -37,18 +37,31 @@ describe('SupplierService', () => {
       paidAt,
     );
 
-  it('splits revenue 80/20 and reconciles payouts with transactions', () => {
+  it('computes net = gross − commission − refunds and reconciles payouts', () => {
     book('2026-12-01', new Date('2026-11-03T03:00:00Z'));
     const b = book('2026-12-05', new Date('2026-11-12T03:00:00Z'));
     bookings.cancel(b.code, new Date('2026-11-13T03:00:00Z'));
-    const f = supplier.finance(now);
-    expect(f.totals.grossUsd).toBe(78);
-    expect(f.totals.commissionUsd).toBeCloseTo(15.6);
-    expect(f.totals.netUsd).toBeCloseTo(62.4);
+    book('2026-12-06', new Date('2026-11-13T04:00:00Z'));
+    const f = supplier.finance(30, now);
+    expect(f.totals.grossUsd).toBe(234);
     expect(f.totals.refundsUsd).toBe(78);
-    expect(f.payouts.map((p) => p.status)).toEqual(['open', 'paid']);
-    const sum = f.payouts.reduce((s, p) => s + p.netUsd, 0);
-    expect(sum).toBeCloseTo(f.totals.netUsd);
+    expect(f.totals.commissionUsd).toBeCloseTo(31.2);
+    expect(f.totals.netUsd).toBeCloseTo(124.8);
+    expect(f.payouts.map((p) => p.status)).toEqual(['completed']);
+    expect(f.payouts[0].netUsd + f.balance.availableUsd).toBeCloseTo(
+      f.totals.netUsd,
+    );
+    expect(f.series).toHaveLength(30);
+  });
+
+  it('validates payout requests against the available balance', () => {
+    book('2026-12-06', new Date('2026-11-13T04:00:00Z'));
+    expect(supplier.finance(30, now).balance.availableUsd).toBeCloseTo(62.4);
+    expect(() => supplier.requestPayout(10, now)).toThrow(BadRequestException);
+    const f = supplier.requestPayout(50, now);
+    expect(f.balance.availableUsd).toBeCloseTo(12.4);
+    expect(f.payouts[0].status).toBe('processing');
+    expect(() => supplier.requestPayout(50, now)).toThrow(BadRequestException);
   });
 
   it('summarises reviews and stores replies', () => {

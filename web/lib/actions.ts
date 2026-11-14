@@ -112,3 +112,15 @@ export async function updateSettingsAction(_: FormState, fd: FormData): Promise<
   revalidatePath("/supplier/settings");
   return { message: "Settings saved" };
 }
+
+export async function requestPayoutAction(_: FormState, fd: FormData): Promise<FormState> {
+  const v = values(fd);
+  try {
+    await api.supplier.requestPayout(Number(v.amountUsd));
+  } catch (e) {
+    if (e instanceof ApiError) return { message: e.message, errors: e.errors, values: v };
+    throw e;
+  }
+  revalidatePath("/supplier/finance");
+  return { message: "Payout requested. Funds usually arrive within 2 business days." };
+}
