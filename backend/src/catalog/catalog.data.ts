@@ -152,6 +152,7 @@ type TourSeed = Omit<
   | 'freeCancellation'
   | 'instantConfirmation'
   | 'published'
+  | 'operator'
 >;
 
 const SEED: TourSeed[] = [
@@ -905,6 +906,24 @@ const OPERATIONS: Record<
   },
 };
 
+/** Licensed local operators (suppliers) running each experience. */
+const OPERATORS: Record<string, string> = {
+  'ha-long-bay-luxury-overnight-cruise': 'Lan Hạ Pearl Cruises',
+  'hoi-an-lantern-food-walk': 'Lotus Trails Vietnam',
+  'sa-pa-rice-terrace-trek-homestay': 'Hoàng Liên Trekking Co.',
+  'golden-bridge-ba-na-hills-day-trip': 'Lotus Trails Vietnam',
+  'hue-imperial-city-heritage-tour': 'Perfume River Heritage Tours',
+  'ninh-binh-trang-an-hang-mua-cycling': 'Tràng An Discovery',
+  'mekong-delta-floating-market-2-days': 'Cửu Long Riverside Travel',
+  'ha-giang-loop-easy-rider': 'Northern Loop Riders',
+  'phong-nha-cave-explorer': 'Kẻ Bàng Adventures',
+  'nha-trang-island-hopping-snorkel': 'Blue Bay Sea Tours',
+  'da-lat-highlands-coffee-waterfalls': 'Langbiang Highland Tours',
+  'saigon-street-food-by-scooter': 'Saigon Night Riders',
+  'phu-quoc-island-escape-3-days': 'Pearl Island Holidays',
+  'hanoi-old-quarter-culture-walk': 'Hanoi Heritage Walks',
+};
+
 /** Multi-day adventures need operator confirmation; everything else is instant. */
 const REQUEST_ONLY = new Set(['ha-giang-loop-easy-rider']);
 const NON_REFUNDABLE = new Set(['phu-quoc-island-escape-3-days']);
@@ -916,5 +935,6 @@ export const TOURS: Tour[] = SEED.map((t) => ({
   startTimes: OPERATIONS[t.slug]?.startTimes ?? ['08:00'],
   freeCancellation: !NON_REFUNDABLE.has(t.slug),
   instantConfirmation: !REQUEST_ONLY.has(t.slug),
+  operator: OPERATORS[t.slug] ?? 'Vietnamtour Partners',
   published: true,
 }));

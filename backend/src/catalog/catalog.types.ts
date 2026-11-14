@@ -53,6 +53,7 @@ export interface Tour {
   freeCancellation: boolean;
   instantConfirmation: boolean;
   published: boolean;
+  operator: string;
 }
 
 export type TourSummary = Omit<
