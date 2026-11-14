@@ -3,6 +3,15 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  app.setGlobalPrefix('api');
+  // Comma-separated allow-list in production; any origin in local dev.
+  app.enableCors({
+    origin: process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(',')
+      : true,
+  });
+  const port = Number(process.env.PORT ?? 4000);
+  await app.listen(port);
+  console.log(`Vietnamtour API listening on http://localhost:${port}/api`);
 }
-bootstrap();
+void bootstrap();
