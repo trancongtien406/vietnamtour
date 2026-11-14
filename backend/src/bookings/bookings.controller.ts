@@ -35,7 +35,9 @@ export class BookingsController {
 
   @Get('bookings/:code')
   get(@Param('code') code: string) {
-    return this.bookings.get(code);
+    const booking = this.bookings.get(code);
+    // Lets clients show the refund outcome before the guest cancels.
+    return { ...booking, refundable: this.bookings.isRefundable(booking) };
   }
 
   @Post('bookings/:code/pay')
