@@ -1,0 +1,6 @@
+// Vendored Design Engineering content: replaces any parent markdownlint config so
+// host settings neither break nor hide lint results here. Long table rows and
+// repository paths make the default 80-column limit impractical.
+{
+  "MD013": false
+}

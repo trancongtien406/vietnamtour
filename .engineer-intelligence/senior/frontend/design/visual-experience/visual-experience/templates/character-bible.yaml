@@ -1,0 +1,38 @@
+id: character_id
+role: npc
+
+proportions:
+  body: ""
+  head_ratio: ""
+
+face:
+  shape: ""
+  eyes: ""
+  mouth: ""
+
+hair_or_fur:
+  style: ""
+  color: ""
+
+outfit:
+  primary: ""
+  secondary: ""
+
+signature_features: []
+palette: []
+personality_cues: []
+style_source: ""
+
+invariants:
+  - same face identity
+  - same proportions
+  - same signature features
+
+allowed_variation:
+  - pose
+  - expression
+
+forbidden_drift:
+  - outfit redesign
+  - age drift
+  - proportion drift

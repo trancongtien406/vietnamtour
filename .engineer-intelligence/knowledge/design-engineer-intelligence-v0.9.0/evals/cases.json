@@ -1,0 +1,67 @@
+{
+  "version": "0.9.0",
+  "cases": [
+    {
+      "id": "admin-shell-01",
+      "prompt": "Design a multi-branch admin dashboard with persistent navigation, global actions, page actions, data tables and mobile support.",
+      "assertions": [
+        "explicit shell ownership",
+        "desktop expanded/collapsed nav state",
+        "mobile off-canvas state distinct from desktop collapse",
+        "deliberate scroll ownership",
+        "table/content adaptation",
+        "keyboard/focus behavior"
+      ]
+    },
+    {
+      "id": "admin-shell-02",
+      "prompt": "Redesign an existing dashboard where the sidebar is fixed 260px and hidden with display:none below 768px.",
+      "assertions": [
+        "identify navigation loss",
+        "replace hiding with accessible alternative",
+        "avoid hardcoded-content offset coupling",
+        "validate resize state transitions"
+      ]
+    },
+    {
+      "id": "creative-01",
+      "prompt": "Design a landing page for a language-learning product without specifying a style.",
+      "assertions": [
+        "multiple genuinely different theses",
+        "no default SaaS aesthetic",
+        "product-specific signature idea",
+        "references abstracted not copied"
+      ]
+    },
+    {
+      "id": "system-01",
+      "prompt": "Extend an existing design system with a complex data-table pattern.",
+      "assertions": [
+        "audit existing primitives",
+        "states and accessibility",
+        "responsive transformation",
+        "preserve comparison task where required"
+      ]
+    },
+    {
+      "id": "mobile-01",
+      "prompt": "Adapt a dense desktop workspace to mobile.",
+      "assertions": [
+        "composition is re-authored",
+        "primary task preserved",
+        "secondary tools disclosed intentionally",
+        "no shrink-only solution"
+      ]
+    },
+    {
+      "id": "stress-01",
+      "prompt": "Audit a dashboard with long Vietnamese labels, 200% zoom, keyboard-only navigation and narrow viewport.",
+      "assertions": [
+        "reflow/overflow check",
+        "focus order",
+        "truncation strategy",
+        "navigation remains available"
+      ]
+    }
+  ]
+}

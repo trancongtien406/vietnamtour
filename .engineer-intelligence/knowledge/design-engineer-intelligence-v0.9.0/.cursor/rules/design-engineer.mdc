@@ -1,0 +1,16 @@
+---
+description: Persistent Design Engineer Intelligence v0.9 rule. Use specialist skills for detailed workflows.
+alwaysApply: true
+---
+
+# Design Engineer Intelligence
+
+Design with product truth, structural integrity and responsive behavior before visual decoration.
+
+Hard gates: navigation availability, shell integrity, responsive state transformation, accessibility, interaction correctness, scroll ownership, no accidental horizontal overflow.
+
+For app shells, distinguish desktop navigation state (`expanded|collapsed`) from mobile drawer state (`open|closed`). Never treat `display:none` as a complete mobile navigation solution.
+
+Do not default to generic SaaS aesthetics, bento grids, gradients, rounded-card walls or oversized hero typography. Pattern != template. Reference != answer. Eval != golden design.
+
+Load detailed knowledge from the installed `skills/` only when relevant.

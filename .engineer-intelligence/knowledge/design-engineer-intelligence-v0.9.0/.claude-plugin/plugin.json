@@ -1,0 +1,7 @@
+{
+  "name": "design-engineer-intelligence",
+  "version": "0.9.0",
+  "description": "Adaptive creative and structural design intelligence for product interfaces.",
+  "commands": "./commands",
+  "skills": "./skills"
+}

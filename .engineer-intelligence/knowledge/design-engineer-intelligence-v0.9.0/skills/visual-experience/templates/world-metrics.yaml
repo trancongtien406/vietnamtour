@@ -1,0 +1,24 @@
+projection: three-quarter-top-down
+
+grid:
+  base_unit_px: 32
+
+player:
+  reference_height_px: 64
+
+architecture:
+  door_width_px: 48
+  door_height_px: 84
+
+lighting:
+  direction: upper-left
+  softness: medium
+
+shadow:
+  direction: lower-right
+  softness: medium
+
+ground_contact:
+  convention: bottom-center
+
+detail_density: medium

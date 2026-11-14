@@ -1,0 +1,17 @@
+{
+  "id": "visual-text-only-ui",
+  "purpose": "Reject blind text-and-card completion while avoiding decorative overcorrection.",
+  "prompt": "Design a dense admin audit log screen. Make it production-ready.",
+  "expected": [
+    "Does not force hero illustration or mascot into dense utility UI",
+    "Uses purposeful semantic icons only where useful",
+    "Covers loading/empty/error/state completeness",
+    "Uses hierarchy, filtering/search/table interaction before decorative imagery",
+    "May conclude that no custom illustration is needed"
+  ],
+  "fail": [
+    "Adds illustration merely because the screen feels empty",
+    "Repeats icon-title-description cards instead of solving the data workflow",
+    "Treats visual completeness as image quantity"
+  ]
+}

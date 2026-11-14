@@ -1,0 +1,26 @@
+id: sprite_id
+identity_reference: ""
+
+action: walk
+direction: right
+
+canvas:
+  width: 96
+  height: 96
+
+frames: 6
+fps: 8
+loop: true
+
+anchor:
+  x: 0.5
+  y: 1.0
+
+background: transparent
+
+invariants:
+  - identity
+  - scale
+  - palette
+  - facing direction
+  - outfit/markings

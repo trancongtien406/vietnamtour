@@ -1,0 +1,12 @@
+version: 1
+style_family: project-default
+
+assets:
+  example.asset:
+    file: assets/example.webp
+    type: raster
+    role: supporting-illustration
+    display_size: "128-160px"
+    variants: []
+    source: generated
+    notes: ""

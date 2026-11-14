@@ -1,0 +1,14 @@
+{
+  "name": "ai-web-design-skills",
+  "version": "1.0.0",
+  "skill_count": 28,
+  "industry_count": 14,
+  "structure": "Claude-compatible .claude/skills; Cursor can mirror/install to .cursor/skills",
+  "principles": [
+    "progressive disclosure",
+    "one-level direct references",
+    "industry-specific art direction",
+    "motion before implementation routing",
+    "production QA gates"
+  ]
+}

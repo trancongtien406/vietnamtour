@@ -1,0 +1,658 @@
+{
+  "package": "design-engineering",
+  "version": "1.4.3",
+  "capabilities": [
+    {
+      "id": "core",
+      "route": "Senior/Core",
+      "surface": "rule+skill",
+      "cost": "light",
+      "estimatedTokens": 900,
+      "always": true,
+      "keywords": []
+    },
+    {
+      "id": "frontend-web",
+      "route": "Senior/Frontend/Web",
+      "surface": "skill",
+      "cost": "medium",
+      "estimatedTokens": 2100,
+      "paths": [
+        "website/**"
+      ],
+      "keywords": [
+        "next.js",
+        "react",
+        "web",
+        "page",
+        "component",
+        "dashboard",
+        "admin panel",
+        "backoffice",
+        "giao diện web",
+        "trang quản trị",
+        "admin ui",
+        "admin screen",
+        "màn hình quản trị",
+        "giao diện admin",
+        "bảng điều khiển"
+      ]
+    },
+    {
+      "id": "frontend-mobile",
+      "route": "Senior/Frontend/Mobile",
+      "surface": "skill",
+      "cost": "medium",
+      "estimatedTokens": 2100,
+      "paths": [
+        "mobile/**"
+      ],
+      "keywords": [
+        "flutter",
+        "dart",
+        "mobile",
+        "android",
+        "ios"
+      ]
+    },
+    {
+      "id": "design",
+      "route": "Senior/Frontend/Design",
+      "surface": "skill",
+      "cost": "medium",
+      "estimatedTokens": 2200,
+      "keywords": [
+        "ui",
+        "ux",
+        "design",
+        "redesign",
+        "layout",
+        "responsive",
+        "accessibility",
+        "design system",
+        "admin dashboard",
+        "admin panel",
+        "dashboard",
+        "visual hierarchy",
+        "interaction design",
+        "giao diện",
+        "bố cục giao diện",
+        "thiết kế giao diện",
+        "admin ui",
+        "admin screen",
+        "màn hình quản trị",
+        "giao diện admin",
+        "thiết kế màn hình quản trị"
+      ]
+    },
+    {
+      "id": "visual-experience",
+      "route": "Senior/Frontend/Design/Visual Experience",
+      "surface": "skill",
+      "cost": "medium",
+      "estimatedTokens": 1700,
+      "keywords": [
+        "asset",
+        "illustration",
+        "icon",
+        "mascot",
+        "sprite",
+        "visual",
+        "art direction"
+      ]
+    },
+    {
+      "id": "mobile-interface-design",
+      "route": "Senior/Frontend/Design/Mobile Interface Design",
+      "surface": "skill",
+      "cost": "medium",
+      "estimatedTokens": 1900,
+      "keywords": [
+        "mobile ui",
+        "mobile ux",
+        "mobile interface",
+        "mobile screen design",
+        "flutter ui",
+        "flutter ux",
+        "giao diện mobile",
+        "thiết kế mobile",
+        "thiết kế onboarding mobile",
+        "thiết kế màn hình mobile",
+        "luồng người dùng mobile"
+      ]
+    },
+    {
+      "id": "web-design-production",
+      "route": "Senior/Frontend/Design/Web Design Production",
+      "surface": "skill+gate",
+      "cost": "medium",
+      "estimatedTokens": 1800,
+      "keywords": [
+        "web design production",
+        "production website design",
+        "landing page design",
+        "thiết kế landing page",
+        "thiết kế website"
+      ]
+    },
+    {
+      "id": "ui-quality-gate",
+      "route": "Senior/Frontend/Design/UI Quality Gate",
+      "surface": "gate",
+      "cost": "light",
+      "estimatedTokens": 900,
+      "keywords": [
+        "ui quality gate",
+        "ui audit",
+        "visual qa",
+        "review ui",
+        "review interface",
+        "audit-ui",
+        "đánh giá giao diện",
+        "review giao diện",
+        "kiểm tra giao diện",
+        "rà soát ui"
+      ]
+    },
+    {
+      "id": "motion-quality-gate",
+      "route": "Senior/Frontend/Design/Motion Quality Gate",
+      "surface": "gate",
+      "cost": "light",
+      "estimatedTokens": 700,
+      "keywords": [
+        "motion quality gate",
+        "motion audit",
+        "review motion quality",
+        "animation quality gate",
+        "audit motion",
+        "review animation",
+        "kiểm tra motion",
+        "đánh giá animation",
+        "đánh giá chất lượng chuyển động"
+      ]
+    },
+    {
+      "id": "industry-design",
+      "route": "Senior/Frontend/Design/Industry Design Guidance",
+      "surface": "skill",
+      "cost": "medium",
+      "estimatedTokens": 2600,
+      "keywords": [
+        "ecommerce website",
+        "saas website",
+        "restaurant website",
+        "healthcare website",
+        "fashion website",
+        "real estate website",
+        "hotel website",
+        "education website",
+        "thiết kế website saas",
+        "thiết kế website thương mại điện tử",
+        "thiết kế website nhà hàng",
+        "thiết kế website y tế"
+      ]
+    },
+    {
+      "id": "quality",
+      "route": "Senior/Quality",
+      "surface": "gate",
+      "cost": "light",
+      "estimatedTokens": 800,
+      "always": true,
+      "keywords": [
+        "test",
+        "coverage",
+        "review",
+        "verify",
+        "regression",
+        "benchmark"
+      ]
+    }
+  ],
+  "capabilityGraphNodes": {
+    "core": {
+      "requires": [],
+      "implies": []
+    },
+    "frontend-web": {
+      "requires": [
+        "core"
+      ],
+      "implies": []
+    },
+    "frontend-mobile": {
+      "requires": [
+        "core"
+      ],
+      "implies": []
+    },
+    "design": {
+      "requiresAny": [
+        "frontend-web",
+        "frontend-mobile"
+      ],
+      "requires": [
+        "core"
+      ],
+      "implies": []
+    },
+    "visual-experience": {
+      "requires": [
+        "design"
+      ],
+      "implies": []
+    },
+    "mobile-interface-design": {
+      "requires": [
+        "core",
+        "frontend-mobile",
+        "design"
+      ],
+      "implies": [
+        "quality"
+      ]
+    },
+    "web-design-production": {
+      "requires": [
+        "core",
+        "frontend-web",
+        "design"
+      ],
+      "implies": [
+        "quality"
+      ]
+    },
+    "ui-quality-gate": {
+      "requires": [
+        "core",
+        "frontend-web",
+        "design"
+      ],
+      "implies": [
+        "quality"
+      ]
+    },
+    "motion-quality-gate": {
+      "requires": [
+        "core",
+        "frontend-web",
+        "design"
+      ],
+      "implies": [
+        "quality"
+      ]
+    },
+    "industry-design": {
+      "requires": [
+        "core",
+        "frontend-web",
+        "design"
+      ],
+      "implies": [
+        "quality"
+      ]
+    },
+    "quality": {
+      "requires": [
+        "core"
+      ],
+      "implies": []
+    }
+  },
+  "contexts": {
+    "core": {
+      "tier": "L0",
+      "estimatedTokens": 700,
+      "sources": [
+        "AGENTS.md",
+        "EI.yaml"
+      ],
+      "description": "Repository map, invariant engineering contract and project manifest."
+    },
+    "frontend-web": {
+      "tier": "L1",
+      "estimatedTokens": 1400,
+      "paths": [
+        "website/**",
+        "web/**"
+      ],
+      "sources": [
+        "website/AGENTS.md",
+        ".engineer-intelligence/senior/frontend/SKILL.md",
+        ".engineer-intelligence/senior/frontend/web/SKILL.md",
+        ".engineer-intelligence/knowledge/frontend/**"
+      ],
+      "description": "Web frontend architecture and browser behavior."
+    },
+    "mobile": {
+      "tier": "L1",
+      "estimatedTokens": 2600,
+      "paths": [
+        "mobile/**",
+        "ios/**",
+        "android/**"
+      ],
+      "sources": [
+        "mobile/AGENTS.md",
+        ".engineer-intelligence/senior/frontend/SKILL.md",
+        ".engineer-intelligence/senior/frontend/mobile/SKILL.md",
+        ".engineer-intelligence/knowledge/mobile/**",
+        ".engineer-intelligence/senior/frontend/design/mobile-interface/SKILL.md",
+        ".engineer-intelligence/knowledge/design-engineer-intelligence-v0.9.0/skills/accessibility/SKILL.md",
+        ".engineer-intelligence/knowledge/design-engineer-intelligence-v0.9.0/skills/navigation-behavior/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/responsive-accessibility/SKILL.md"
+      ],
+      "description": "Mobile application architecture and platform behavior."
+    },
+    "design": {
+      "tier": "L2",
+      "estimatedTokens": 2800,
+      "sources": [
+        ".engineer-intelligence/senior/frontend/design/SKILL.md",
+        ".engineer-intelligence/runtime/design/DESIGN-DELIVERY-CONTRACT-V1.0.md",
+        ".engineer-intelligence/knowledge/design-engineer-intelligence-v0.9.0/skills/design-engineer/SKILL.md",
+        ".engineer-intelligence/knowledge/design-engineer-intelligence-v0.9.0/skills/structural-responsive-intelligence/SKILL.md",
+        ".engineer-intelligence/senior/frontend/design/mobile-interface/SKILL.md",
+        ".engineer-intelligence/knowledge/design-engineer-intelligence-v0.9.0/references/structural-invariants.md",
+        ".engineer-intelligence/knowledge/design-engineer-intelligence-v0.9.0/references/responsive-state-model.md"
+      ],
+      "description": "Product-grounded interface design, hard structural gates, responsive content behavior, interaction states and evidence-aware review."
+    },
+    "design-web-production": {
+      "tier": "L2",
+      "estimatedTokens": 1800,
+      "sources": [
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/web-design-production/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/art-direction/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/responsive-accessibility/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/anti-generic-design/SKILL.md"
+      ],
+      "description": "Production-oriented web design sequence, art direction, responsive accessibility and anti-generic checks."
+    },
+    "design-quality": {
+      "tier": "L2",
+      "estimatedTokens": 1500,
+      "sources": [
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/ui-quality-gate/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/anti-generic-design/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/performance-quality-gate/SKILL.md"
+      ],
+      "description": "Post-implementation UI review for hierarchy, industry fit, interaction, responsive behavior, accessibility and performance."
+    },
+    "design-motion": {
+      "tier": "L2",
+      "estimatedTokens": 1200,
+      "sources": [
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/interaction-motion/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/motion-direction/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/motion-quality-gate/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/responsive-accessibility/SKILL.md"
+      ],
+      "description": "Motion intent, implementation routing, quality gates and reduced-motion adaptation."
+    },
+    "design-industry": {
+      "tier": "L2",
+      "estimatedTokens": 2600,
+      "sources": [
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/ecommerce/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/restaurant/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/healthcare/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/automotive/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/fashion/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/saas/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/developer-portfolio/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/law-firm/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/real-estate/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/beauty-wellness/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/hotel-resort/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/architecture-interior/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/ai-startup/SKILL.md",
+        ".engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/education/SKILL.md"
+      ],
+      "description": "Industry-specific conversion, trust and art direction guidance for web design requests."
+    },
+    "quality": {
+      "tier": "L2",
+      "estimatedTokens": 800,
+      "sources": [
+        ".engineer-intelligence/runtime/EVIDENCE-AND-DECISIONS.md"
+      ],
+      "description": "Verification and evidence contract."
+    }
+  },
+  "routes": [
+    {
+      "id": "mobile-ui",
+      "paths": [
+        "mobile/**",
+        "ios/**",
+        "android/**"
+      ],
+      "keywords": [
+        "design",
+        "redesign",
+        "ui",
+        "ux",
+        "screen",
+        "layout",
+        "overflow",
+        "responsive",
+        "mobile design",
+        "mobile ui",
+        "mobile ux",
+        "thiết kế",
+        "thiết kế onboarding",
+        "thiết kế màn hình",
+        "làm lại trang profile",
+        "màn hình",
+        "giao diện",
+        "bố cục",
+        "luồng người dùng"
+      ],
+      "contexts": [
+        "mobile",
+        "design",
+        "quality"
+      ],
+      "skills": [
+        "mobile-interface-design",
+        "ui-implementation",
+        "visual-hierarchy",
+        "navigation-behavior",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "admin-dashboard",
+      "keywords": [
+        "dashboard",
+        "admin dashboard",
+        "admin panel",
+        "admin ui",
+        "admin screen",
+        "backoffice",
+        "bảng điều khiển",
+        "trang quản trị",
+        "màn hình quản trị",
+        "trang admin",
+        "giao diện admin"
+      ],
+      "contexts": [
+        "frontend-web",
+        "design",
+        "quality",
+        "design-quality"
+      ],
+      "skills": [
+        "ui-implementation",
+        "visual-hierarchy",
+        "ui-quality-gate",
+        "anti-generic-design"
+      ]
+    },
+    {
+      "id": "design-intent",
+      "keywords": [
+        "redesign",
+        "admin ui",
+        "admin screen",
+        "interface design",
+        "visual hierarchy",
+        "responsive design",
+        "thiết kế giao diện",
+        "thiết kế màn hình quản trị",
+        "giao diện admin",
+        "giao diện quản trị",
+        "bố cục giao diện",
+        "đánh giá giao diện"
+      ],
+      "contexts": [
+        "design",
+        "quality"
+      ],
+      "skills": [
+        "visual-hierarchy"
+      ]
+    },
+    {
+      "id": "web-design-production",
+      "keywords": [
+        "web design production",
+        "production website design",
+        "landing page design",
+        "build a landing page",
+        "design a landing page",
+        "thiết kế landing page",
+        "thiết kế website",
+        "website production"
+      ],
+      "contexts": [
+        "frontend-web",
+        "design",
+        "quality",
+        "design-web-production"
+      ],
+      "skills": [
+        "web-design-production",
+        "art-direction",
+        "responsive-accessibility",
+        "anti-generic-design",
+        "ui-quality-gate"
+      ]
+    },
+    {
+      "id": "design-motion",
+      "keywords": [
+        "motion design",
+        "animation design",
+        "interaction motion",
+        "motion direction",
+        "motion quality",
+        "review motion quality",
+        "thiết kế chuyển động",
+        "hiệu ứng chuyển động",
+        "đánh giá animation",
+        "đánh giá chất lượng chuyển động"
+      ],
+      "contexts": [
+        "frontend-web",
+        "design",
+        "quality",
+        "design-motion"
+      ],
+      "skills": [
+        "interaction-motion",
+        "motion-direction",
+        "motion-quality-gate",
+        "responsive-accessibility"
+      ]
+    },
+    {
+      "id": "design-quality-review",
+      "keywords": [
+        "ui quality gate",
+        "ui audit",
+        "visual qa",
+        "interface review",
+        "review ui",
+        "review interface",
+        "audit-ui",
+        "đánh giá giao diện",
+        "review giao diện",
+        "kiểm tra giao diện",
+        "rà soát ui"
+      ],
+      "contexts": [
+        "design",
+        "quality",
+        "design-quality"
+      ],
+      "skills": [
+        "ui-quality-gate",
+        "anti-generic-design",
+        "interface-review"
+      ]
+    },
+    {
+      "id": "industry-design",
+      "keywords": [
+        "ecommerce website",
+        "saas website",
+        "restaurant website",
+        "healthcare website",
+        "fashion website",
+        "automotive website",
+        "real estate website",
+        "hotel website",
+        "education website",
+        "law firm website",
+        "beauty website",
+        "thiết kế website saas",
+        "thiết kế website thương mại điện tử",
+        "thiết kế website nhà hàng",
+        "thiết kế website y tế",
+        "thiết kế website giáo dục"
+      ],
+      "contexts": [
+        "frontend-web",
+        "design",
+        "quality",
+        "design-web-production",
+        "design-industry",
+        "design-quality"
+      ],
+      "skills": [
+        "web-design-production",
+        "industry-design-guidance",
+        "responsive-accessibility",
+        "ui-quality-gate"
+      ]
+    },
+    {
+      "id": "web-ui",
+      "paths": [
+        "website/**",
+        "web/**"
+      ],
+      "keywords": [
+        "ui",
+        "ux",
+        "page",
+        "component",
+        "layout",
+        "responsive",
+        "giao diện"
+      ],
+      "contexts": [
+        "frontend-web",
+        "design",
+        "quality"
+      ],
+      "skills": [
+        "ui-implementation",
+        "visual-hierarchy"
+      ]
+    }
+  ]
+}

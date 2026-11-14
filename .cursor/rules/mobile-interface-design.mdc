@@ -1,0 +1,20 @@
+---
+description: Native mobile screen and flow design specialization.
+alwaysApply: false
+---
+
+# Native Mobile Interface Design
+
+For a native mobile task that changes screens, flows, hierarchy, interaction,
+device adaptation or accessibility, read
+`.engineer-intelligence/senior/frontend/design/mobile-interface/SKILL.md` and
+the Design delivery contract. Pair
+`.engineer-intelligence/senior/frontend/mobile/SKILL.md` when it exists;
+otherwise follow the target project's mobile instructions and established
+framework conventions. This Design-only package does not install Mobile
+Engineering. Respect native navigation, safe areas, keyboard/input, touch
+targets, platform accessibility and motion preferences. Do not treat a native
+app as a shrunken website.
+
+For code-only mobile maintenance or performance work without an interface
+decision, do not activate this Design specialization.

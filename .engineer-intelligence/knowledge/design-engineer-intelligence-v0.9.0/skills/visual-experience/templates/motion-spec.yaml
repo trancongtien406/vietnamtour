@@ -1,0 +1,13 @@
+motion_role: selection
+purpose: ""
+intensity: subtle
+duration_ms: 180
+easing: standard
+trigger: ""
+enter: ""
+exit: ""
+
+reduced_motion:
+  behavior: instant-semantic-state-change
+
+implementation_hint: ""

@@ -1,0 +1,46 @@
+{
+  "evalVersion": 1,
+  "purpose": "Check that Design Engineering infers app roots from project evidence rather than conventional directory names.",
+  "cases": [
+    {
+      "id": "flutter-arbitrary-root",
+      "request": "Redesign the native profile screen in this Flutter project.",
+      "repoEvidence": ["app_123/pubspec.yaml", "app_123/lib/main.dart", "app_123/ios/Runner.xcodeproj"],
+      "expectedPath": "app_123",
+      "expectedSurface": "Flutter native app",
+      "askUser": false
+    },
+    {
+      "id": "web-arbitrary-root",
+      "request": "Improve the checkout page in this web project.",
+      "repoEvidence": ["storefront-next/package.json: next dependency", "storefront-next/app/checkout/page.tsx"],
+      "expectedPath": "storefront-next",
+      "expectedSurface": "Next.js web app",
+      "askUser": false
+    },
+    {
+      "id": "monorepo-task-selects-package",
+      "request": "Redesign the admin user table.",
+      "repoEvidence": ["pnpm-workspace.yaml: apps/* and packages/*", "apps/backoffice/package.json: Vite + React", "apps/customer-portal/package.json: Next.js", "apps/backoffice/src/routes/users.tsx"],
+      "expectedPath": "apps/backoffice",
+      "expectedSurface": "React admin web app",
+      "askUser": false
+    },
+    {
+      "id": "multiple-native-apps-ambiguous",
+      "request": "Update the login screen.",
+      "repoEvidence": ["ios-consumer/Package.swift", "ios-staff/Package.swift", "both contain a LoginView"],
+      "expectedPath": null,
+      "expectedSurface": "Native iOS; target app unresolved",
+      "askUser": true
+    },
+    {
+      "id": "cross-platform-project-preserves-workspaces",
+      "request": "Update onboarding in the shared app UI.",
+      "repoEvidence": ["melos.yaml: packages/*", "packages/onboarding/pubspec.yaml", "apps/app_123/pubspec.yaml depends on packages/onboarding"],
+      "expectedPath": "packages/onboarding",
+      "expectedSurface": "Shared Flutter UI package; identify app consumers separately",
+      "askUser": false
+    }
+  ]
+}

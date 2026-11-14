@@ -1,0 +1,30 @@
+---
+description: UX/UI, interaction and design engineering specialization under Frontend.
+alwaysApply: false
+---
+
+# Design Engineering Routing
+
+When the task materially changes what a user sees, understands, navigates or
+does—UX/UI, information architecture, visual hierarchy, dashboards/admin shells,
+design systems, interaction, responsive behavior, accessibility behavior,
+motion, branding or interface critique—route Senior -> Frontend -> Design and
+read `.engineer-intelligence/senior/frontend/design/SKILL.md` plus
+`.engineer-intelligence/runtime/design/DESIGN-DELIVERY-CONTRACT-V1.0.md` for
+substantial work.
+
+Design is not a root sibling of Frontend. Activate it only when the requested
+work changes user-visible behavior or makes a design decision. Never activate it
+from file location, directory name, route name, or workspace layout alone. For a
+code-only bug fix without a design decision, stay on the normal frontend route.
+A media query or static DOM result is not rendered responsive or interaction
+evidence.
+
+For native mobile screen/flow work, pair Design with Frontend -> Mobile and read
+`.engineer-intelligence/senior/frontend/design/mobile-interface/SKILL.md`. For
+production websites, UI critique, or motion review, load the matching
+web-production, UI-quality, or motion-quality context and its targeted upstream
+skill; prefer its mirrored `.cursor/skills/<skill-name>/SKILL.md` entry when
+installed, with the preserved canonical source under
+`.engineer-intelligence/knowledge/ai-web-design-skills-v1.0.0/.claude/skills/`
+as the fallback. Do not load every industry profile by default.

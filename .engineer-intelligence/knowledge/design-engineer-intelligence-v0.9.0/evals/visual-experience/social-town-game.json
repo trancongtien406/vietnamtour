@@ -1,0 +1,19 @@
+{
+  "id": "visual-social-town-game",
+  "purpose": "Test world/sprite production reasoning rather than concept-art-only thinking.",
+  "prompt": "Implement a cozy 2.5D social town with player-owned bánh mì, coffee, flower and photocopy shops.",
+  "expected": [
+    "Defines world metrics/perspective before environment generation",
+    "Distinguishes concept art from production props/sprites",
+    "Defines character identity and sprite constraints",
+    "Uses a stable asset manifest",
+    "Checks anchor/scale/perspective/lighting consistency",
+    "Uses reusable environment kits when appropriate"
+  ],
+  "fail": [
+    "Generates four unrelated beautiful shop images and calls the world complete",
+    "Uses character frames with drifting identity or scale",
+    "Hardcodes arbitrary asset paths throughout gameplay code",
+    "Ignores real runtime size and ground contact"
+  ]
+}

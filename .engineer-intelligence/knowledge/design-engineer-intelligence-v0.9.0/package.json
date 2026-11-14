@@ -1,0 +1,16 @@
+{
+  "name": "design-engineer-intelligence-local",
+  "version": "0.9.0",
+  "private": true,
+  "description": "Local/private Design Engineer Intelligence CLI",
+  "bin": {
+    "design-engineer": "bin/design-engineer.js"
+  },
+  "scripts": {
+    "validate": "node bin/design-engineer.js validate",
+    "eval": "node bin/design-engineer.js eval"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

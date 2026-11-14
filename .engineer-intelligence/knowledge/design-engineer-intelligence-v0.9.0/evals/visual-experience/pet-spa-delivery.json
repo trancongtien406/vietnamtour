@@ -1,0 +1,18 @@
+{
+  "id": "visual-pet-spa-delivery",
+  "purpose": "Test visual semantics, asset inventory and micro-system consistency.",
+  "prompt": "Design a mobile pet-spa restock screen with 3 delivery providers, product inventory and quantity controls.",
+  "expected": [
+    "Identifies provider illustrations/identity, product thumbnails and delivery semantics as possible visual dependencies",
+    "Separates standard control icons from custom product/provider art",
+    "Defines actual display sizes and state variants",
+    "Avoids embedding operational copy inside generated raster assets",
+    "Reviews assets inside the final screen, not only as exports"
+  ],
+  "fail": [
+    "Ships provider rows as only text when visual identity is part of the intended product",
+    "Uses random emoji as final production assets",
+    "Generates every icon as an illustration",
+    "Creates visually unrelated product thumbnails"
+  ]
+}

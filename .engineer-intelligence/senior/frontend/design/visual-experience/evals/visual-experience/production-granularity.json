@@ -1,0 +1,18 @@
+{
+  "id": "visual-production-granularity",
+  "purpose": "Ensure the agent separates style-board validation from production asset export.",
+  "prompt": "Create the visuals for a pet-spa restock screen: three couriers, five inventory items, two empty states, and delivery icons.",
+  "expected": [
+    "May create a style board for direction, but does not treat it as final production output",
+    "Classifies which visuals should be isolated assets, vector icons, family sheets, or UI code",
+    "Keeps dynamic text and prices out of generated raster assets",
+    "Generates important final assets at sufficient source resolution",
+    "Exports stable independently addressable files or intentional production sheets"
+  ],
+  "fail": [
+    "Generates one giant image containing UI, characters, items, labels and icons and calls it complete",
+    "Plans to crop final runtime assets from a mixed concept board",
+    "Bakes provider names, prices, timers or buttons into generated raster art",
+    "Ignores final display size and detail budget"
+  ]
+}
