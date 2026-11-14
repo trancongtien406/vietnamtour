@@ -19,9 +19,7 @@ class VietnamtourApi {
   Future<dynamic> _send(String method, String path, [Map<String, dynamic>? body]) async {
     final uri = Uri.parse('$apiBase/api$path');
     final headers = {'content-type': 'application/json'};
-    final res = method == 'GET'
-        ? await _client.get(uri, headers: headers)
-        : await _client.post(uri, headers: headers, body: jsonEncode(body ?? {}));
+    final res = method == 'GET' ? await _client.get(uri, headers: headers) : await _client.post(uri, headers: headers, body: jsonEncode(body ?? {}));
     final data = res.body.isEmpty ? null : jsonDecode(utf8.decode(res.bodyBytes));
     if (res.statusCode >= 400) {
       final map = data is Map<String, dynamic> ? data : <String, dynamic>{};
@@ -33,31 +31,29 @@ class VietnamtourApi {
     return data;
   }
 
-  Future<List<TourSummary>> tours({String? category, String? q}) async {
-    final params = <String, String>{
-      'category': ?category,
-      if (q != null && q.isNotEmpty) 'q': q,
-    };
+  Future<List<TourSummary>> tours({String? category, String? q, String? region, String? sort}) async {
+    final params = <String, String>{'category': ?category, 'region': ?region, 'sort': ?sort, if (q != null && q.isNotEmpty) 'q': q};
     final qs = params.isEmpty ? '' : '?${Uri(queryParameters: params).query}';
     final data = await _send('GET', '/tours$qs') as Map<String, dynamic>;
     return (data['items'] as List).map((j) => TourSummary.fromJson(j as Map<String, dynamic>)).toList();
   }
 
-  Future<TourDetail> tour(String slug) async =>
-      TourDetail.fromJson(await _send('GET', '/tours/$slug') as Map<String, dynamic>);
+  Future<List<Destination>> destinations() async =>
+      (await _send('GET', '/destinations') as List).map((j) => Destination.fromJson(j as Map<String, dynamic>)).toList();
+
+  Future<TourDetail> tour(String slug) async => TourDetail.fromJson(await _send('GET', '/tours/$slug') as Map<String, dynamic>);
 
   Future<List<Slot>> availability(String slug, String date) async {
     final data = await _send('GET', '/tours/$slug/availability?date=$date') as Map<String, dynamic>;
     return (data['slots'] as List).map((j) => Slot.fromJson(j as Map<String, dynamic>)).toList();
   }
 
-  Future<Booking> book(Map<String, dynamic> body) async =>
-      Booking.fromJson(await _send('POST', '/bookings', body) as Map<String, dynamic>);
+  Future<Booking> book(Map<String, dynamic> body) async => Booking.fromJson(await _send('POST', '/bookings', body) as Map<String, dynamic>);
 
-  Future<Booking> pay(String code, String card) async => Booking.fromJson(
-        await _send('POST', '/bookings/$code/pay', {'cardNumber': card, 'expiry': '12/30', 'cvc': '123'})
-            as Map<String, dynamic>,
-      );
+  Future<Booking> pay(String code, String card) async =>
+      Booking.fromJson(await _send('POST', '/bookings/$code/pay', {'cardNumber': card, 'expiry': '12/30', 'cvc': '123'}) as Map<String, dynamic>);
+
+  Future<Booking> booking(String code) async => Booking.fromJson(await _send('GET', '/bookings/${Uri.encodeComponent(code)}') as Map<String, dynamic>);
 
   Future<List<Booking>> myTrips(String email) async {
     final data = await _send('GET', '/bookings?email=${Uri.encodeQueryComponent(email)}') as List;

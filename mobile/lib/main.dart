@@ -5,6 +5,17 @@ import 'src/screens.dart';
 
 void main() => runApp(VietnamtourApp(api: VietnamtourApi()));
 
+/// Web deep links: `/?tab=saved|trips`, `/?tour=slug`, `/?voucher=CODE`.
+Widget homeFromUri(VietnamtourApi api, Uri uri) {
+  final q = uri.queryParameters;
+  final tab = switch (q['tab']) {
+    'saved' => 1,
+    'trips' => 2,
+    _ => 0,
+  };
+  return HomeShell(api: api, initialTab: tab, openTour: q['tour'], openVoucher: q['voucher']);
+}
+
 const jade = Color(0xFF0D5C4B);
 const lotus = Color(0xFFE2713A);
 const ink = Color(0xFF12211D);
@@ -36,7 +47,7 @@ class VietnamtourApp extends StatelessWidget {
           ),
         ),
       ),
-      home: HomeShell(api: api),
+      home: homeFromUri(api, Uri.base),
     );
   }
 }
