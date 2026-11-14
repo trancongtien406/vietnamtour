@@ -135,7 +135,7 @@ export function BookingsTable({ bookings, tours, initial, today }: { bookings: B
 
       <section className="sp-card overflow-hidden">
         <div className="max-h-[720px] overflow-auto">
-          <table className="sp-table min-w-[1000px]">
+          <table className="sp-table min-w-[960px]">
             <thead>
               <tr><th>Booking ID</th><th>Experience</th><th>Date</th><th>Lead traveller</th><th>Guests</th><th className="text-right">Total</th><th>Status</th><th className="text-right">Action</th></tr>
             </thead>
@@ -148,16 +148,16 @@ export function BookingsTable({ bookings, tours, initial, today }: { bookings: B
                       {tourBySlug.get(b.tourSlug)?.images[0] && (
                         <div className="relative h-10 w-14 shrink-0 overflow-hidden rounded-lg"><Image src={tourBySlug.get(b.tourSlug)!.images[0]} alt="" fill sizes="56px" className="object-cover" /></div>
                       )}
-                      <span className="line-clamp-2 min-w-40 max-w-60 leading-5">{b.tourTitle}</span>
+                      <span className="line-clamp-2 min-w-36 max-w-52 leading-5">{b.tourTitle}</span>
                     </div>
                   </td>
                   <td className="whitespace-nowrap">{day(b.date)}<span className="block text-xs text-sp-text2">{b.time}</span></td>
-                  <td className="whitespace-nowrap">{b.fullName}<span className="block text-xs text-sp-text2">{b.email}</span></td>
+                  <td className="whitespace-nowrap">{b.fullName}<span className="block max-w-44 truncate text-xs text-sp-text2">{b.email}</span></td>
                   <td className="sp-num">{b.adults + b.children}</td>
                   <td className="sp-num whitespace-nowrap text-right font-semibold">{usd(b.totalUsd)}</td>
                   <td><BookingBadge booking={b} /></td>
                   <td className="text-right">
-                    <button type="button" onClick={(e) => { e.stopPropagation(); setOpen(b.code); }} className="sp-btn sp-btn-outline h-9">View details</button>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); setOpen(b.code); }} className="sp-btn sp-btn-outline h-9 whitespace-nowrap px-3">View</button>
                   </td>
                 </tr>
               ))}
