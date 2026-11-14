@@ -42,9 +42,9 @@ async function Overview() {
           <h2 className="font-semibold">Revenue, last 14 days</h2>
           <div className="mt-6 flex h-48 items-end gap-2" role="img" aria-label="Daily revenue bar chart">
             {o.revenueByDay.map((d) => (
-              <div key={d.day} className="group flex flex-1 flex-col items-center gap-2">
-                <div className="relative flex w-full flex-1 items-end">
-                  <div className="w-full rounded-t-md bg-jade/80 transition group-hover:bg-lotus" style={{ height: `${Math.max(2, (d.revenueUsd / max) * 100)}%` }} title={`${d.day}: ${usd(d.revenueUsd)}`} />
+              <div key={d.day} className="group flex min-w-0 flex-1 flex-col items-center gap-2">
+                <div className="flex h-40 w-full items-end">
+                  <div className="w-full rounded-t-md bg-jade/80 transition group-hover:bg-lotus" style={{ height: `${Math.max(2, (d.revenueUsd / max) * 160)}px` }} title={`${d.day}: ${usd(d.revenueUsd)}`} />
                 </div>
                 <span className="text-[10px] text-ink/45">{d.day.slice(8)}</span>
               </div>

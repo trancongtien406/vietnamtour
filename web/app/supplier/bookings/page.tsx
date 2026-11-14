@@ -42,11 +42,11 @@ async function Table({ searchParams }: { searchParams: Promise<Record<string, st
           <tbody>
             {rows.map((b) => (
               <tr key={b.code} className="border-b border-mist/70 last:border-0">
-                <td className="px-4 py-3 font-mono text-xs font-semibold">{b.code}</td>
+                <td className="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold">{b.code}</td>
                 <td className="whitespace-nowrap px-4 py-3">{longDate(b.date)}<span className="block text-xs text-ink/50">{b.time}</span></td>
-                <td className="max-w-56 truncate px-4 py-3">{b.tourTitle}</td>
-                <td className="px-4 py-3">{b.fullName}<span className="block text-xs text-ink/50">{b.phone}</span></td>
-                <td className="px-4 py-3">{b.adults}A{b.children ? ` ${b.children}C` : ""}</td>
+                <td className="max-w-52 truncate px-4 py-3">{b.tourTitle}</td>
+                <td className="whitespace-nowrap px-4 py-3">{b.fullName}<span className="block text-xs text-ink/50">{b.phone}</span></td>
+                <td className="whitespace-nowrap px-4 py-3">{b.adults}A{b.children ? ` ${b.children}C` : ""}</td>
                 <td className="px-4 py-3 font-semibold">{usd(b.totalUsd)}{b.refundUsd > 0 && <span className="block text-xs font-normal text-emerald-700">−{usd(b.refundUsd)} refunded</span>}</td>
                 <td className="px-4 py-3"><span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_STYLE[b.status]}`}>{STATUS_LABEL[b.status]}</span></td>
                 <td className="px-4 py-3"><SupplierActions booking={b} /></td>

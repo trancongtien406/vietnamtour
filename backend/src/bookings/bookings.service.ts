@@ -319,7 +319,16 @@ export class BookingsService implements OnModuleInit {
           (!filter.status || b.status === filter.status) &&
           (!filter.tour || b.tourSlug === filter.tour),
       )
-      .sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
+      .sort((a, b) => {
+        // Upcoming departures first (soonest on top), then past ones (latest first).
+        const today = isoDay(new Date());
+        const ka = `${a.date}${a.time}`;
+        const kb = `${b.date}${b.time}`;
+        const pa = a.date < today;
+        const pb = b.date < today;
+        if (pa !== pb) return pa ? 1 : -1;
+        return pa ? kb.localeCompare(ka) : ka.localeCompare(kb);
+      });
   }
 
   supplierOverview(now = new Date()) {
@@ -440,19 +449,33 @@ export class BookingsService implements OnModuleInit {
       ['Ana García', 'ana.garcia@example.com', '+34 612 345 678'],
       ['Mark Byrne', 'mark.byrne@example.com', '+353 85 123 4567'],
       ['Priya Sharma', 'priya.s@example.com', '+91 98765 43210'],
+      ['Kim Ji-woo', 'jiwoo.kim@example.com', '+82 10 5555 0101'],
+      ['Olivia Brown', 'olivia.b@example.com', '+1 212 555 0187'],
+      ['Matteo Rossi', 'matteo.rossi@example.com', '+39 347 555 1290'],
+      ['Sophie van Dijk', 'sophie.vd@example.com', '+31 6 5555 4321'],
+      ['Lê Hoàng Nam', 'hoangnam@example.com', '+84 912 345 678'],
+      ['Noah Wilson', 'noah.w@example.com', '+61 423 555 876'],
+      ['Isabella Costa', 'isa.costa@example.com', '+55 11 95555 2233'],
+      ['Ethan Clarke', 'ethan.c@example.com', '+44 7700 900456'],
+      ['Trần Công Tiến', 'tien.demo@example.com', '+84 935 000 406'],
+      ['Aiko Suzuki', 'aiko.s@example.com', '+81 80 5555 7788'],
+      ["Liam O'Connor", 'liam.oc@example.com', '+353 87 555 3344'],
+      ['Chloe Martin', 'chloe.martin@example.com', '+33 7 55 55 12 34'],
     ];
     const tours = this.catalog.listAllTours();
-    guests.forEach(([fullName, email, phone], i) => {
+    const total = 40;
+    for (let i = 0; i < total; i++) {
+      const [fullName, email, phone] = guests[i % guests.length];
       const tour = this.catalog.findTour(tours[(i * 5) % tours.length].slug);
-      const createdAt = addDays(now, -13 + i);
-      const date = isoDay(addDays(now, 2 + ((i * 3) % 20)));
+      const createdAt = addDays(now, -20 + Math.floor((i * 21) / total));
+      const date = isoDay(addDays(createdAt, 3 + ((i * 7) % 24)));
       try {
         const b = this.create(
           {
             tourSlug: tour.slug,
             date,
             time: tour.startTimes[i % tour.startTimes.length],
-            adults: 1 + (i % 3),
+            adults: 1 + (i % 3) + (i % 7 === 0 ? 2 : 0),
             children: i % 4 === 0 ? 1 : 0,
             fullName,
             email,
@@ -460,16 +483,61 @@ export class BookingsService implements OnModuleInit {
           },
           createdAt,
         );
-        if (i !== 11)
-          this.pay(
-            b.code,
-            { cardNumber: '4242424242424242', expiry: '12/30', cvc: '123' },
-            addDays(createdAt, 0),
-          );
-        if (i === 9) this.cancel(b.code, addDays(createdAt, 1));
+        const past = date < isoDay(now);
+        if (i % 13 === 11 && !past) continue; // left unpaid
+        this.pay(
+          b.code,
+          { cardNumber: '4242424242424242', expiry: '12/30', cvc: '123' },
+          createdAt,
+        );
+        if (i % 11 === 9) this.cancel(b.code, addDays(createdAt, 1));
+        else if (past) {
+          const day = new Date(`${date}T08:00:00+07:00`);
+          if (b.status === 'awaiting_supplier')
+            this.supplierAction(b.code, 'confirm', addDays(createdAt, 1));
+          this.supplierAction(b.code, 'check-in', day);
+        }
       } catch {
         /* a sold-out slot just skips one demo booking */
       }
-    });
+    }
+    // A couple of trips for the demo traveller so "My trips" has history.
+    const mine: [string, number, number][] = [
+      ['ha-long-bay-luxury-overnight-cruise', -40, -25],
+      ['hue-imperial-city-heritage-tour', -6, 19],
+    ];
+    for (const [slug, created, depart] of mine) {
+      const tour = this.catalog.findTour(slug);
+      const createdAt = addDays(now, created);
+      const date = isoDay(addDays(now, depart));
+      try {
+        const b = this.create(
+          {
+            tourSlug: slug,
+            date,
+            time: tour.startTimes[0],
+            adults: 2,
+            children: 0,
+            fullName: 'Trần Công Tiến',
+            email: 'tien.demo@example.com',
+            phone: '+84 935 000 406',
+          },
+          createdAt,
+        );
+        this.pay(
+          b.code,
+          { cardNumber: '4242424242424242', expiry: '12/30', cvc: '123' },
+          createdAt,
+        );
+        if (depart < 0)
+          this.supplierAction(
+            b.code,
+            'check-in',
+            new Date(`${date}T08:00:00+07:00`),
+          );
+      } catch {
+        /* skip */
+      }
+    }
   }
 }
