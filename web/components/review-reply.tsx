@@ -1,0 +1,26 @@
+"use client";
+
+import { useActionState, useState } from "react";
+import { replyReviewAction, type FormState } from "@/lib/actions";
+
+export function ReviewReply({ id }: { id: string }) {
+  const [open, setOpen] = useState(false);
+  const [state, action, pending] = useActionState<FormState, FormData>(replyReviewAction, {});
+  if (!open)
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="text-sm font-semibold text-jade hover:underline">
+        Reply publicly
+      </button>
+    );
+  return (
+    <form action={action} className="space-y-2">
+      <input type="hidden" name="id" value={id} />
+      <textarea name="text" required minLength={2} maxLength={600} rows={3} defaultValue={state.values?.text} placeholder="Thank the traveller and answer any feedback…" className="input w-full" />
+      {state.errors?.text && <p className="text-sm text-red-600">{state.errors.text}</p>}
+      <div className="flex gap-2">
+        <button disabled={pending} className="btn-primary !px-4 !py-2 text-sm">{pending ? "Publishing…" : "Publish reply"}</button>
+        <button type="button" onClick={() => setOpen(false)} className="btn-ghost !px-4 !py-2 text-sm">Cancel</button>
+      </div>
+    </form>
+  );
+}

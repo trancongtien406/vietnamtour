@@ -103,3 +103,75 @@ export interface SupplierOverview {
 }
 
 export type FieldErrors = Record<string, string>;
+
+export interface FinanceTx {
+  id: string;
+  type: "payment" | "refund";
+  at: string;
+  bookingCode: string;
+  tourTitle: string;
+  guest: string;
+  grossUsd: number;
+  commissionUsd: number;
+  netUsd: number;
+}
+
+export interface Payout {
+  id: string;
+  periodStart: string;
+  periodEnd: string;
+  payoutDate: string;
+  status: "open" | "scheduled" | "paid";
+  transactions: number;
+  grossUsd: number;
+  commissionUsd: number;
+  netUsd: number;
+}
+
+export interface SupplierSettings {
+  companyName: string;
+  legalName: string;
+  licenseNo: string;
+  address: string;
+  email: string;
+  phone: string;
+  website: string;
+  languages: string[];
+  cutoffHours: number;
+  payout: { bankName: string; accountName: string; accountLast4: string; schedule: "weekly" };
+  notifications: { newBooking: boolean; cancellation: boolean; newReview: boolean; dailySummary: boolean };
+}
+
+export interface SupplierFinance {
+  commissionRate: number;
+  totals: {
+    grossUsd: number;
+    commissionUsd: number;
+    netUsd: number;
+    refundsUsd: number;
+    paidOutUsd: number;
+    scheduledUsd: number;
+    openUsd: number;
+  };
+  nextPayout: { date: string; amountUsd: number; status: string } | null;
+  payoutAccount: SupplierSettings["payout"];
+  payouts: Payout[];
+  transactions: FinanceTx[];
+}
+
+export interface SupplierReview {
+  id: string;
+  tourSlug: string;
+  tourTitle: string;
+  author: string;
+  country: string;
+  rating: number;
+  date: string;
+  comment: string;
+  reply?: { text: string; at: string };
+}
+
+export interface SupplierReviews {
+  summary: { count: number; average: number; replied: number; distribution: { stars: number; count: number }[] };
+  items: SupplierReview[];
+}

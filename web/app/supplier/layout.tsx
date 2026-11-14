@@ -23,7 +23,10 @@ export default function SupplierLayout({ children }: LayoutProps<"/supplier">) {
           <Link href="/" className="mt-3 inline-block font-semibold text-jade hover:underline">View website →</Link>
         </div>
       </aside>
-      <div className="min-w-0 px-5 py-8 md:px-8">{children}</div>
+      <div className="min-w-0 px-5 py-8 md:px-8">
+        {children}
+        <p className="mt-10 text-center text-xs text-ink/40">Portfolio demo · Sample data · Sandbox payments</p>
+      </div>
     </div>
   );
 }

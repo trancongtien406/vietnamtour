@@ -1,3 +1,4 @@
+import { EXTRA_REVIEWS } from './reviews.data';
 import { Destination, Tour } from './catalog.types';
 
 const img = (file: string) => `/images/destinations/${file}`;
@@ -930,6 +931,9 @@ const NON_REFUNDABLE = new Set(['phu-quoc-island-escape-3-days']);
 
 export const TOURS: Tour[] = SEED.map((t) => ({
   ...t,
+  reviews: [...t.reviews, ...(EXTRA_REVIEWS[t.slug] ?? [])].sort((a, b) =>
+    b.date.localeCompare(a.date),
+  ),
   meetingPoint:
     OPERATIONS[t.slug]?.meetingPoint ?? 'Details sent after booking',
   startTimes: OPERATIONS[t.slug]?.startTimes ?? ['08:00'],

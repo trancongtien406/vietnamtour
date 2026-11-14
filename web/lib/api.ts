@@ -1,5 +1,15 @@
 import "server-only";
-import type { Booking, Destination, SupplierOverview, Tour, TourSummary } from "./types";
+import type {
+  Booking,
+  Destination,
+  SupplierFinance,
+  SupplierOverview,
+  SupplierReview,
+  SupplierReviews,
+  SupplierSettings,
+  Tour,
+  TourSummary,
+} from "./types";
 
 const API = `${process.env.API_URL ?? "http://localhost:4000"}/api`;
 
@@ -64,5 +74,16 @@ export const api = {
       request<{ date: string; slots: { time: string; capacity: number; booked: number; remaining: number }[] }[]>(
         `/supplier/calendar?tour=${encodeURIComponent(tour)}&days=${days}`,
       ),
+    finance: () => request<SupplierFinance>("/supplier/finance"),
+    reviews: (rating?: string) =>
+      request<SupplierReviews>(`/supplier/reviews${rating ? `?rating=${encodeURIComponent(rating)}` : ""}`),
+    reply: (id: string, text: string) =>
+      request<SupplierReview>(`/supplier/reviews/${encodeURIComponent(id)}/reply`, {
+        method: "POST",
+        body: JSON.stringify({ text }),
+      }),
+    settings: () => request<SupplierSettings>("/supplier/settings"),
+    updateSettings: (data: Record<string, unknown>) =>
+      request<SupplierSettings>("/supplier/settings", { method: "PATCH", body: JSON.stringify(data) }),
   },
 };

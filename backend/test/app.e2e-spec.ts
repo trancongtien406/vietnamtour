@@ -91,4 +91,23 @@ describe('Vietnamtour API (e2e)', () => {
       .expect(400);
     expect((res.body as { errors: object }).errors).toHaveProperty('tourSlug');
   });
+
+  it('GET /api/supplier/finance, reviews and settings', async () => {
+    const http = app.getHttpServer();
+    const f = await request(http).get('/api/supplier/finance').expect(200);
+    expect((f.body as { commissionRate: number }).commissionRate).toBe(0.2);
+    const r = await request(http)
+      .get('/api/supplier/reviews?rating=5')
+      .expect(200);
+    const items = (r.body as { items: { id: string; rating: number }[] }).items;
+    expect(items.length).toBeGreaterThan(0);
+    await request(http)
+      .post(`/api/supplier/reviews/${items[0].id}/reply`)
+      .send({ text: 'Thanks for travelling with us!' })
+      .expect(200);
+    await request(http)
+      .patch('/api/supplier/settings')
+      .send({ email: 'not-an-email' })
+      .expect(400);
+  });
 });

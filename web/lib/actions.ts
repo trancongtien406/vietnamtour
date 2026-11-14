@@ -72,3 +72,43 @@ export async function updateProductAction(_: FormState, fd: FormData): Promise<F
   revalidatePath("/supplier", "layout");
   return { message: "Saved. Changes are live on the website." };
 }
+
+export async function replyReviewAction(_: FormState, fd: FormData): Promise<FormState> {
+  const v = values(fd);
+  try {
+    await api.supplier.reply(v.id, v.text ?? "");
+  } catch (e) {
+    if (e instanceof ApiError) return { message: e.message, errors: e.errors, values: v };
+    throw e;
+  }
+  revalidatePath("/supplier/reviews");
+  return { message: "Reply published" };
+}
+
+export async function updateSettingsAction(_: FormState, fd: FormData): Promise<FormState> {
+  const v = values(fd);
+  try {
+    await api.supplier.updateSettings({
+      companyName: v.companyName,
+      legalName: v.legalName,
+      licenseNo: v.licenseNo,
+      address: v.address,
+      email: v.email,
+      phone: v.phone,
+      website: v.website,
+      languages: v.languages,
+      cutoffHours: v.cutoffHours,
+      notifications: {
+        newBooking: fd.has("newBooking"),
+        cancellation: fd.has("cancellation"),
+        newReview: fd.has("newReview"),
+        dailySummary: fd.has("dailySummary"),
+      },
+    });
+  } catch (e) {
+    if (e instanceof ApiError) return { message: e.message, errors: e.errors, values: v };
+    throw e;
+  }
+  revalidatePath("/supplier/settings");
+  return { message: "Settings saved" };
+}

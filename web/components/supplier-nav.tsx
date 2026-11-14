@@ -8,6 +8,9 @@ const ITEMS = [
   { href: "/supplier/bookings", label: "Bookings" },
   { href: "/supplier/calendar", label: "Calendar" },
   { href: "/supplier/products", label: "Products" },
+  { href: "/supplier/finance", label: "Finance" },
+  { href: "/supplier/reviews", label: "Reviews" },
+  { href: "/supplier/settings", label: "Settings" },
 ];
 
 export function SupplierNav() {

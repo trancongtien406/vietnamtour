@@ -6,6 +6,7 @@ import { BookingsStore } from './bookings/bookings.store';
 import { CatalogController } from './catalog/catalog.controller';
 import { CatalogService } from './catalog/catalog.service';
 import { SupplierController } from './supplier/supplier.controller';
+import { SupplierService } from './supplier/supplier.service';
 
 @Module({
   controllers: [
@@ -14,6 +15,6 @@ import { SupplierController } from './supplier/supplier.controller';
     BookingsController,
     SupplierController,
   ],
-  providers: [CatalogService, BookingsService, BookingsStore],
+  providers: [CatalogService, BookingsService, BookingsStore, SupplierService],
 })
 export class AppModule {}

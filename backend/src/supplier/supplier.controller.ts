@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { BookingsService } from '../bookings/bookings.service';
 import { CatalogService } from '../catalog/catalog.service';
+import { SupplierService } from './supplier.service';
 
 /**
  * Supplier portal API. Every route lives under /api/supplier/* so the web
@@ -21,6 +22,7 @@ export class SupplierController {
   constructor(
     private readonly catalog: CatalogService,
     private readonly bookings: BookingsService,
+    private readonly supplier: SupplierService,
   ) {}
 
   @Get('overview')
@@ -75,5 +77,34 @@ export class SupplierController {
         .slice(0, 10);
       return { date, slots: this.bookings.availability(tour, date) };
     });
+  }
+
+  @Get('finance')
+  finance() {
+    return this.supplier.finance();
+  }
+
+  @Get('reviews')
+  reviews(@Query('rating') rating?: string, @Query('tour') tour?: string) {
+    return this.supplier.reviews({
+      rating: rating ? Number(rating) : undefined,
+      tour: tour || undefined,
+    });
+  }
+
+  @Post('reviews/:id/reply')
+  @HttpCode(200)
+  reply(@Param('id') id: string, @Body() body: { text?: unknown }) {
+    return this.supplier.reply(id, body?.text);
+  }
+
+  @Get('settings')
+  settings() {
+    return this.supplier.settings();
+  }
+
+  @Patch('settings')
+  updateSettings(@Body() body: Record<string, unknown>) {
+    return this.supplier.updateSettings(body ?? {});
   }
 }
